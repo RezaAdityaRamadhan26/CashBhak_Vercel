@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      // Baris ini sangat PENTING!
+      // Ia memberitahu Next.js bahwa '@/*' adalah alias untuk folder di akar proyek ('./*').
+      "@/*": ["./*"] 
+    }
+  },
+  "include": ["**/*.js", "**/*.jsx"]
+}
