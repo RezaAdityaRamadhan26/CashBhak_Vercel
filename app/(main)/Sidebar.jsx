@@ -32,7 +32,7 @@ const Sidebar = () => {
 
   return (
     <aside
-      className="relative flex h-screen w-20 flex-col justify-between p-4 pt-6 shadow-lg transition-all duration-300 ease-in-out hover:w-60 group"
+      className="hidden md:flex relative h-screen w-16 md:w-20 flex-col justify-between p-2 md:p-4 pt-4 md:pt-6 shadow-lg transition-all duration-300 ease-in-out hover:w-60 group"
       style={{ backgroundColor: 'var(--light-custom)' }}
     >
       <div>
@@ -56,8 +56,8 @@ const Sidebar = () => {
                 key={item.name}
                 href={item.href}
                 className={`flex items-center gap-3 rounded-lg p-3 ${isActive
-                    ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-                    : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+                  ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
+                  : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
                   }`}
                 style={{ fontFamily: 'var(--font-poppins)' }}
               >
@@ -80,8 +80,8 @@ const Sidebar = () => {
                 href={item.href}
                 // (DIUBAH) Ditambahkan pengecekan 'isActive' di sini juga
                 className={`flex items-center gap-3 rounded-lg p-3 ${isActive
-                    ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-                    : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+                  ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
+                  : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
                   }`}
                 style={{ fontFamily: 'var(--font-poppins)' }}
               >
