@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,10 +15,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { pushProduct } from "@/lib/action";
+import { useState, useRef } from "react";
 
 export function DialogAdd() {
+  const [open, setOpen] = useState(false);
+  const formRef = useRef(null);
+
+  async function handleSubmit(formData) {
+    try {
+      await pushProduct(formData);
+      setOpen(false); // Tutup dialog setelah berhasil
+      formRef.current?.reset(); // Reset form
+    } catch (error) {
+      console.error("Error adding product:", error);
+      alert("Gagal menambahkan produk");
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className='bg-[var(--primary-custom)]'>
           <Plus className="h-5 w-5" />
@@ -25,7 +42,7 @@ export function DialogAdd() {
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
-        <form action={pushProduct}>
+        <form action={handleSubmit} ref={formRef}>
           <DialogHeader>
             <DialogTitle>Tambah Produk</DialogTitle>
             <DialogDescription>
@@ -78,12 +95,9 @@ export function DialogAdd() {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button type="button" variant="outline">Cancel</Button>
             </DialogClose>
-            <DialogClose asChild>
-                <Button type="submit">Simpan Produk</Button>
-            </DialogClose>
-            
+            <Button type="submit">Simpan Produk</Button>
           </DialogFooter>
         </form>
       </DialogContent>

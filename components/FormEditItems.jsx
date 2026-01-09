@@ -15,10 +15,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProduct } from "@/lib/action";
 import { Pencil } from "lucide-react";
+import { useState, useRef } from "react";
 
 export function DialogEdit({ item }) {
+  const [open, setOpen] = useState(false);
+  const formRef = useRef(null);
+
+  async function handleSubmit(formData) {
+    try {
+      await updateProduct(formData);
+      setOpen(false); // Tutup dialog setelah berhasil
+    } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Gagal mengupdate produk");
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="flex-1 flex items-center gap-1 bg-[var(--primary-custom)]">
           <Pencil className="h-4 w-4" />
@@ -27,7 +41,7 @@ export function DialogEdit({ item }) {
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
-        <form action={updateProduct}>
+        <form action={handleSubmit} ref={formRef}>
           <DialogHeader>
             <DialogTitle>Edit Produk</DialogTitle>
             <DialogDescription>
@@ -82,11 +96,9 @@ export function DialogEdit({ item }) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button type="button" variant="outline">Cancel</Button>
             </DialogClose>
-            <DialogClose asChild>
-              <Button type="submit">Simpan Perubahan</Button>
-            </DialogClose>
+            <Button type="submit">Simpan Perubahan</Button>
           </DialogFooter>
         </form>
       </DialogContent>
