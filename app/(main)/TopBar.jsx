@@ -6,13 +6,7 @@ export default async function Topbar() {
   const userData = await fetchUserData();
 
   return (
-    <header className="flex justify-between md:justify-end items-center p-3 md:p-4 bg-white shadow-sm rounded-xl mb-4 md:mb-6">
-      {/* Logo for mobile */}
-      <div className="flex md:hidden items-center gap-2">
-        <img src="/images/logo.png" alt="Logo" className="w-8 h-8" />
-        <span className="text-lg font-bold text-[var(--black-custom)]">CashBhak</span>
-      </div>
-
+    <header className="hidden md:flex justify-end items-center p-3 md:p-4 bg-white shadow-sm rounded-xl mb-4 md:mb-6">
       <div className="flex items-center gap-3 md:gap-6">
         <Bell className="h-5 w-5 md:h-6 md:w-6 text-gray-500 cursor-pointer hover:text-black" />
         <div className="flex items-center gap-2 md:gap-3">
