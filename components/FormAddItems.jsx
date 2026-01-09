@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { pushProduct } from "@/lib/action";
 import { useState, useRef } from "react";
+import { toast } from "sonner";
 
 export function DialogAdd() {
   const [open, setOpen] = useState(false);
@@ -26,9 +27,10 @@ export function DialogAdd() {
       await pushProduct(formData);
       setOpen(false); // Tutup dialog setelah berhasil
       formRef.current?.reset(); // Reset form
+      toast.success("Produk berhasil ditambahkan");
     } catch (error) {
       console.error("Error adding product:", error);
-      alert("Gagal menambahkan produk");
+      toast.error("Gagal menambahkan produk");
     }
   }
 

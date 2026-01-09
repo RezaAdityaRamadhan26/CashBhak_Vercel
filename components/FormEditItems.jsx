@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { updateProduct } from "@/lib/action";
 import { Pencil } from "lucide-react";
 import { useState, useRef } from "react";
+import { toast } from "sonner";
 
 export function DialogEdit({ item }) {
   const [open, setOpen] = useState(false);
@@ -25,9 +26,10 @@ export function DialogEdit({ item }) {
     try {
       await updateProduct(formData);
       setOpen(false); // Tutup dialog setelah berhasil
+      toast.success("Produk berhasil diperbarui");
     } catch (error) {
       console.error("Error updating product:", error);
-      alert("Gagal mengupdate produk");
+      toast.error("Gagal mengupdate produk");
     }
   }
 

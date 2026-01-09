@@ -1,19 +1,20 @@
-import { Inter, Poppins } from "next/font/google"; 
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import AppToaster from "@/components/Toaster";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter", 
+  variable: "--font-inter",
 });
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"], 
-  variable: "--font-poppins", 
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
 });
 
 export const metadata = {
-  title: "CashBhak - Sistem Kasir Modern", 
+  title: "CashBhak - Sistem Kasir Modern",
   description: "Kelola penjualan, inventori, dan laporan bisnis dengan mudah.",
 };
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
         style={{ background: "var(--gray-custom)" }}
       >
         {children}
+        <AppToaster />
       </body>
     </html>
   );

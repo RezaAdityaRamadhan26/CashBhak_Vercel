@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { fetchItems, createTransaction } from "@/lib/action";
+import { toast } from "sonner";
 import { CreditCard, Plus, Minus, Loader2 } from "lucide-react";
 
 const paymentMethods = [
@@ -74,7 +75,7 @@ export default function TransactionPage() {
 
   const handleOrderProcess = async () => {
     if (cart.length === 0) {
-      alert("Keranjang Anda kosong.");
+      toast.warning("Keranjang Anda kosong");
       return;
     }
 
@@ -87,12 +88,12 @@ export default function TransactionPage() {
       }
 
       if (result.success) {
-        alert(`Pesanan berhasil! ID Transaksi: ${result.transactionId}`);
+        toast.success(`Pesanan berhasil! ID: ${result.transactionId}`);
         setCart([]);
         fetchItems().then((data) => setItems(data || []));
       }
     } catch (error) {
-      alert(`Gagal memproses pesanan: ${error.message}`);
+      toast.error(`Gagal memproses pesanan: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -237,8 +238,8 @@ export default function TransactionPage() {
                     type="button"
                     onClick={() => setPaymentMethod(pm.key)}
                     className={`flex-1 p-2 border rounded-md flex flex-col items-center transition-all ${paymentMethod === pm.key
-                        ? "border-[var(--primary-custom)] bg-[var(--primary-custom)]/10"
-                        : "border-gray-200"
+                      ? "border-[var(--primary-custom)] bg-[var(--primary-custom)]/10"
+                      : "border-gray-200"
                       }`}
                   >
                     {pm.icon ? (
@@ -254,8 +255,8 @@ export default function TransactionPage() {
                     )}
                     <span
                       className={`text-xs mt-1 ${paymentMethod === pm.key
-                          ? "text-[var(--primary-custom)] font-semibold"
-                          : "text-gray-500"
+                        ? "text-[var(--primary-custom)] font-semibold"
+                        : "text-gray-500"
                         }`}
                     >
                       {pm.label}

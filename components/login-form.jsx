@@ -1,6 +1,7 @@
 
 "use client"
 import React from "react";
+import { toast } from "sonner";
 
 import { signIn } from "next-auth/react"
 import { redirect } from "next/navigation"
@@ -27,11 +28,11 @@ export function LoginForm({ className, ...props }) {
     })
 
     if (!response.ok) {
-      alert('gagal login')
+      toast.error('Gagal login. Periksa email atau password.');
       return null
     }
 
-    alert('Success!')
+    toast.success('Login berhasil!');
     redirect("/dashboard")
   }
 
