@@ -38,8 +38,8 @@ const NavLinks = ({ pathname, onClose }) => (
           href={item.href}
           onClick={onClose}
           className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
-              ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-              : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+            ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
+            : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
             }`}
           style={{ fontFamily: 'var(--font-poppins)' }}
         >
@@ -62,8 +62,8 @@ const UtilLinks = ({ pathname, onClose }) => (
           href={item.href}
           onClick={onClose}
           className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
-              ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-              : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+            ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
+            : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
             }`}
           style={{ fontFamily: 'var(--font-poppins)' }}
         >
@@ -134,52 +134,52 @@ const Sidebar = () => {
           className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
           aria-label="Toggle menu"
         >
-          {isOpen ? (
-            <X className="h-6 w-6 text-[var(--black-custom)]" />
-          ) : (
-            <Menu className="h-6 w-6 text-[var(--black-custom)]" />
-          )}
+          <span className={`inline-flex transition-transform duration-300 ${isOpen ? 'rotate-90 scale-95' : 'rotate-0 scale-100'}`}>
+            {isOpen ? (
+              <X className="h-6 w-6 text-[var(--black-custom)]" />
+            ) : (
+              <Menu className="h-6 w-6 text-[var(--black-custom)]" />
+            )}
+          </span>
         </button>
       </div>
 
-      {/* Mobile Menu Drawer */}
-      {isOpen && (
-        <div className="md:hidden fixed inset-0 z-40">
-          {/* Overlay Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={handleClose}
-          />
+      {/* Mobile Menu Drawer (animated) */}
+      <div className={`md:hidden fixed inset-0 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        {/* Overlay Backdrop */}
+        <div
+          className={`absolute inset-0 bg-black transition-opacity duration-300 ${isOpen ? 'opacity-50' : 'opacity-0'}`}
+          onClick={handleClose}
+        />
 
-          {/* Drawer Menu */}
-          <div
-            className="absolute left-0 top-0 h-full w-64 shadow-lg flex flex-col justify-between p-4 pt-20 overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-            style={{ backgroundColor: 'var(--light-custom)' }}
-          >
-            <div>
-              {/* Navigasi Utama */}
-              <nav className="flex flex-col gap-2 mb-6">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Menu</h3>
-                <NavLinks pathname={pathname} onClose={handleClose} />
-              </nav>
+        {/* Drawer Menu */}
+        <div
+          className={`absolute left-0 top-0 h-full w-64 shadow-lg flex flex-col justify-between p-4 pt-20 overflow-y-auto transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          onClick={(e) => e.stopPropagation()}
+          style={{ backgroundColor: 'var(--light-custom)' }}
+        >
+          <div>
+            {/* Navigasi Utama */}
+            <nav className="flex flex-col gap-2 mb-6">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Menu</h3>
+              <NavLinks pathname={pathname} onClose={handleClose} />
+            </nav>
 
-              <hr className="my-2 border-[var(--gray-custom)]" />
+            <hr className="my-2 border-[var(--gray-custom)]" />
 
-              {/* Navigasi Bantuan */}
-              <nav className="flex flex-col gap-2">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Settings</h3>
-                <UtilLinks pathname={pathname} onClose={handleClose} />
-              </nav>
-            </div>
+            {/* Navigasi Bantuan */}
+            <nav className="flex flex-col gap-2">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Settings</h3>
+              <UtilLinks pathname={pathname} onClose={handleClose} />
+            </nav>
+          </div>
 
-            {/* Logout Button */}
-            <div>
-              <Logout />
-            </div>
+          {/* Logout Button */}
+          <div>
+            <Logout />
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };
