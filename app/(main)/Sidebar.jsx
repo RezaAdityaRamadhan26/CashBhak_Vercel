@@ -9,8 +9,6 @@ import {
   ArrowLeftRight,
   Package,
   HelpCircle,
-  Settings,
-  LogOut,
   User,
   Menu,
   X
@@ -116,29 +114,41 @@ const Sidebar = () => {
 
         {/* Tombol Logout */}
         <div>
-          <Logout></Logout>
+          <Logout />
         </div>
       </aside>
 
-      {/* Mobile Hamburger Menu */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white shadow-sm p-4 flex items-center justify-between">
+      {/* Mobile Hamburger Menu - Fixed Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md p-4 flex items-center justify-between h-16">
         <div className="flex items-center gap-2">
           <Image src="/images/logo.png" alt="Logo" width={32} height={32} />
-          <span className="font-bold text-[var(--black-custom)]">CashBhak</span>
+          <span className="font-bold text-[var(--black-custom)]" style={{ fontFamily: 'var(--font-poppins)' }}>CashBhak</span>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+          aria-label="Toggle menu"
         >
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {isOpen ? (
+            <X className="h-6 w-6 text-[var(--black-custom)]" />
+          ) : (
+            <Menu className="h-6 w-6 text-[var(--black-custom)]" />
+          )}
         </button>
       </div>
 
       {/* Mobile Menu Drawer */}
       {isOpen && (
-        <div className="md:hidden fixed inset-0 z-30 bg-black/50" onClick={() => setIsOpen(false)}>
+        <div className="md:hidden fixed inset-0 z-40">
+          {/* Overlay Backdrop */}
           <div
-            className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg flex flex-col justify-between p-4 pt-20"
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Drawer Menu */}
+          <div
+            className="absolute left-0 top-0 h-full w-64 shadow-lg flex flex-col justify-between p-4 pt-20 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
             style={{ backgroundColor: 'var(--light-custom)' }}
           >
@@ -160,80 +170,12 @@ const Sidebar = () => {
 
             {/* Logout Button */}
             <div>
-              <Logout></Logout>
+              <Logout />
             </div>
           </div>
         </div>
       )}
     </>
-  );
-};
-
-export default Sidebar;
-<div>
-  {/* Logo */}
-  <div className="flex items-center gap-3 mb-6 pl-1">
-    <Image src="/images/logo.png" alt="Logo" width={32} height={32} className="flex-shrink-0" />
-    <span
-      className="text-xl font-bold text-[var(--black-custom)] hidden group-hover:inline"
-      style={{ fontFamily: 'var(--font-poppins)' }}
-    >
-      CashBhak
-    </span>
-  </div>
-
-  {/* Navigasi Utama */}
-  <nav className="flex flex-col gap-2">
-    {navItems.map((item) => {
-      const isActive = pathname === item.href;
-      return (
-        <Link
-          key={item.name}
-          href={item.href}
-          className={`flex items-center gap-3 rounded-lg p-3 ${isActive
-            ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-            : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
-            }`}
-          style={{ fontFamily: 'var(--font-poppins)' }}
-        >
-          <item.icon className="h-5 w-5 flex-shrink-0" />
-          <span className="hidden group-hover:inline">{item.name}</span>
-        </Link>
-      );
-    })}
-  </nav>
-
-  <hr className="my-4 border-[var(--gray-custom)]" />
-
-  {/* Navigasi Bantuan & Setting (sekarang ada Profile) */}
-  <nav className="flex flex-col gap-2">
-    {utilItems.map((item) => {
-      const isActive = pathname === item.href;
-      return (
-        <Link
-          key={item.name}
-          href={item.href}
-          // (DIUBAH) Ditambahkan pengecekan 'isActive' di sini juga
-          className={`flex items-center gap-3 rounded-lg p-3 ${isActive
-            ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-            : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
-            }`}
-          style={{ fontFamily: 'var(--font-poppins)' }}
-        >
-          <item.icon className="h-5 w-5 flex-shrink-0" />
-          <span className="hidden group-hover:inline">{item.name}</span>
-        </Link>
-      );
-    })}
-  </nav>
-</div>
-
-{/* Tombol Logout */ }
-<div>
-
-  <Logout></Logout>
-</div>
-    </aside >
   );
 };
 
