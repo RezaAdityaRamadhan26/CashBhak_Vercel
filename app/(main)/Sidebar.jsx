@@ -15,70 +15,70 @@ import {
 } from 'lucide-react';
 import Logout from '@/components/log-out';
 
-// Definisikan item navigasi
+// Navigation items
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Transaction', href: '/transaction', icon: ArrowLeftRight },
   { name: 'Items Data', href: '/items', icon: Package },
 ];
 
-// Tambahkan link Profile di sini
 const utilItems = [
   { name: 'Profile', href: '/profile', icon: User },
   { name: 'Help & Support', href: '/help', icon: HelpCircle },
 ];
 
+// Navigation Links Component - Declared outside component to avoid re-creation
+const NavLinks = ({ pathname, onClose }) => (
+  <>
+    {navItems.map((item) => {
+      const isActive = pathname === item.href;
+      return (
+        <Link
+          key={item.name}
+          href={item.href}
+          onClick={onClose}
+          className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
+              ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
+              : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+            }`}
+          style={{ fontFamily: 'var(--font-poppins)' }}
+        >
+          <item.icon className="h-5 w-5 flex-shrink-0" />
+          <span>{item.name}</span>
+        </Link>
+      );
+    })}
+  </>
+);
+
+// Utility Links Component - Declared outside component to avoid re-creation
+const UtilLinks = ({ pathname, onClose }) => (
+  <>
+    {utilItems.map((item) => {
+      const isActive = pathname === item.href;
+      return (
+        <Link
+          key={item.name}
+          href={item.href}
+          onClick={onClose}
+          className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
+              ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
+              : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+            }`}
+          style={{ fontFamily: 'var(--font-poppins)' }}
+        >
+          <item.icon className="h-5 w-5 flex-shrink-0" />
+          <span>{item.name}</span>
+        </Link>
+      );
+    })}
+  </>
+);
+
 const Sidebar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-
-  // Navigation Links Component
-  const NavLinks = () => (
-    <>
-      {navItems.map((item) => {
-        const isActive = pathname === item.href;
-        return (
-          <Link
-            key={item.name}
-            href={item.href}
-            onClick={() => setIsOpen(false)}
-            className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
-              ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-              : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
-              }`}
-            style={{ fontFamily: 'var(--font-poppins)' }}
-          >
-            <item.icon className="h-5 w-5 flex-shrink-0" />
-            <span>{item.name}</span>
-          </Link>
-        );
-      })}
-    </>
-  );
-
-  // Utility Links Component
-  const UtilLinks = () => (
-    <>
-      {utilItems.map((item) => {
-        const isActive = pathname === item.href;
-        return (
-          <Link
-            key={item.name}
-            href={item.href}
-            onClick={() => setIsOpen(false)}
-            className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
-              ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-              : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
-              }`}
-            style={{ fontFamily: 'var(--font-poppins)' }}
-          >
-            <item.icon className="h-5 w-5 flex-shrink-0" />
-            <span>{item.name}</span>
-          </Link>
-        );
-      })}
-    </>
-  );
+  const handleClose = () => setIsOpen(false);
 
   return (
     <>
@@ -101,14 +101,14 @@ const Sidebar = () => {
 
           {/* Navigasi Utama */}
           <nav className="flex flex-col gap-2">
-            <NavLinks />
+            <NavLinks pathname={pathname} onClose={handleClose} />
           </nav>
 
           <hr className="my-4 border-[var(--gray-custom)]" />
 
           {/* Navigasi Bantuan & Setting */}
           <nav className="flex flex-col gap-2">
-            <UtilLinks />
+            <UtilLinks pathname={pathname} onClose={handleClose} />
           </nav>
         </div>
 
@@ -122,7 +122,12 @@ const Sidebar = () => {
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md p-4 flex items-center justify-between h-16">
         <div className="flex items-center gap-2">
           <Image src="/images/logo.png" alt="Logo" width={32} height={32} />
-          <span className="font-bold text-[var(--black-custom)]" style={{ fontFamily: 'var(--font-poppins)' }}>CashBhak</span>
+          <span
+            className="font-bold text-[var(--black-custom)]"
+            style={{ fontFamily: 'var(--font-poppins)' }}
+          >
+            CashBhak
+          </span>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -143,7 +148,7 @@ const Sidebar = () => {
           {/* Overlay Backdrop */}
           <div
             className="absolute inset-0 bg-black/50"
-            onClick={() => setIsOpen(false)}
+            onClick={handleClose}
           />
 
           {/* Drawer Menu */}
@@ -156,7 +161,7 @@ const Sidebar = () => {
               {/* Navigasi Utama */}
               <nav className="flex flex-col gap-2 mb-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Menu</h3>
-                <NavLinks />
+                <NavLinks pathname={pathname} onClose={handleClose} />
               </nav>
 
               <hr className="my-2 border-[var(--gray-custom)]" />
@@ -164,7 +169,7 @@ const Sidebar = () => {
               {/* Navigasi Bantuan */}
               <nav className="flex flex-col gap-2">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Settings</h3>
-                <UtilLinks />
+                <UtilLinks pathname={pathname} onClose={handleClose} />
               </nav>
             </div>
 
