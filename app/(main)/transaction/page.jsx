@@ -88,7 +88,10 @@ export default function TransactionPage() {
       }
 
       if (result.success) {
-        toast.success(`Pesanan berhasil! ID: ${result.transactionId}`);
+        const total = cart.reduce((sum, it) => sum + it.price * it.quantity, 0);
+        toast.success('Checkout berhasil', {
+          description: `ID: ${result.transactionId} • Total: Rp. ${total.toLocaleString('id-ID')}`,
+        });
         setCart([]);
         fetchItems().then((data) => setItems(data || []));
       }

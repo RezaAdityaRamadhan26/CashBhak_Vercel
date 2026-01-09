@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import Image from "next/image";
 import { DialogAdd } from "@/components/FormAddItems";
 import { DialogEdit } from "@/components/FormEditItems";
+import ConfirmDeleteButton from "@/components/ConfirmDeleteButton";
 
 export default async function ItemsDataPage() {
   const items = await fetchItems();
@@ -15,7 +16,7 @@ export default async function ItemsDataPage() {
           <DialogAdd></DialogAdd>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
           {items.map((item) => (
             <div
               className="bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
@@ -40,11 +41,9 @@ export default async function ItemsDataPage() {
                 </p>
                 <div className="flex gap-2 mt-4">
                   <DialogEdit item={item} />
-                  <form action={deleteData}>
+                  <form action={deleteData} id={`delete-${item.product_id}`}>
                     <input type="hidden" value={item.product_id} name="id" />
-                    <button className="flex-1 py-2 px-3 bg-[var(--red-custom)] text-white text-sm rounded-md transition-all duration-200 hover:opacity-90 active:scale-[0.98]">
-                      Delete
-                    </button>
+                    <ConfirmDeleteButton formId={`delete-${item.product_id}`} />
                   </form>
 
                 </div>
