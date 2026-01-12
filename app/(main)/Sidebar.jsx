@@ -11,7 +11,9 @@ import {
   HelpCircle,
   User,
   Menu,
-  X
+  X,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 import Logout from '@/components/log-out';
 
@@ -28,7 +30,7 @@ const utilItems = [
 ];
 
 // Navigation Links Component - Declared outside component to avoid re-creation
-const NavLinks = ({ pathname, onClose }) => (
+const NavLinks = ({ pathname, onClose, isExpanded }) => (
   <>
     {navItems.map((item) => {
       const isActive = pathname === item.href;
@@ -37,14 +39,15 @@ const NavLinks = ({ pathname, onClose }) => (
           key={item.name}
           href={item.href}
           onClick={onClose}
-          className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
+          className={`flex items-center gap-3 rounded-lg p-3 transition-colors whitespace-nowrap ${isActive
             ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
             : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
             }`}
           style={{ fontFamily: 'var(--font-poppins)' }}
+          title={!isExpanded ? item.name : ''}
         >
           <item.icon className="h-5 w-5 flex-shrink-0" />
-          <span>{item.name}</span>
+          {isExpanded && <span className="text-sm">{item.name}</span>}
         </Link>
       );
     })}
@@ -52,7 +55,7 @@ const NavLinks = ({ pathname, onClose }) => (
 );
 
 // Utility Links Component - Declared outside component to avoid re-creation
-const UtilLinks = ({ pathname, onClose }) => (
+const UtilLinks = ({ pathname, onClose, isExpanded }) => (
   <>
     {utilItems.map((item) => {
       const isActive = pathname === item.href;
@@ -61,14 +64,15 @@ const UtilLinks = ({ pathname, onClose }) => (
           key={item.name}
           href={item.href}
           onClick={onClose}
-          className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${isActive
+          className={`flex items-center gap-3 rounded-lg p-3 transition-colors whitespace-nowrap ${isActive
             ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
             : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
             }`}
           style={{ fontFamily: 'var(--font-poppins)' }}
+          title={!isExpanded ? item.name : ''}
         >
           <item.icon className="h-5 w-5 flex-shrink-0" />
-          <span>{item.name}</span>
+          {isExpanded && <span className="text-sm">{item.name}</span>}
         </Link>
       );
     })}
@@ -78,42 +82,61 @@ const UtilLinks = ({ pathname, onClose }) => (
 const Sidebar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDesktopExpanded, setIsDesktopExpanded] = useState(true);
   const handleClose = () => setIsOpen(false);
+  const toggleDesktopSidebar = () => setIsDesktopExpanded(!isDesktopExpanded);
 
   return (
     <>
-      {/* Desktop Sidebar - Hover Expand */}
+      {/* Desktop Sidebar - Toggle Expand/Collapse */}
       <aside
-        className="hidden md:flex relative h-screen w-16 md:w-20 flex-col justify-between p-2 md:p-4 pt-4 md:pt-6 shadow-lg transition-all duration-300 ease-in-out hover:w-60 group"
+        className={`hidden md:flex relative h-screen flex-col justify-between p-2 md:p-4 pt-4 md:pt-6 shadow-lg transition-all duration-300 ease-in-out overflow-hidden ${isDesktopExpanded ? 'w-64' : 'w-20'
+          }`}
         style={{ backgroundColor: 'var(--light-custom)' }}
       >
         <div>
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-6 pl-1">
-            <Image src="/images/logo.png" alt="Logo" width={32} height={32} className="flex-shrink-0" />
-            <span
-              className="text-xl font-bold text-[var(--black-custom)] hidden group-hover:inline"
-              style={{ fontFamily: 'var(--font-poppins)' }}
+          {/* Sidebar Header with Toggle */}
+          <div className="flex items-center justify-between mb-6 px-1">
+            <div className="flex items-center gap-3">
+              <Image src="/images/logo.png" alt="Logo" width={32} height={32} className="flex-shrink-0" />
+              {isDesktopExpanded && (
+                <span
+                  className="text-xl font-bold text-[var(--black-custom)] inline whitespace-nowrap"
+                  style={{ fontFamily: 'var(--font-poppins)' }}
+                >
+                  CashBhak
+                </span>
+              )}
+            </div>
+            <button
+              onClick={toggleDesktopSidebar}
+              className="p-1 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+              aria-label="Toggle sidebar"
+              title={isDesktopExpanded ? 'Collapse' : 'Expand'}
             >
-              CashBhak
-            </span>
+              {isDesktopExpanded ? (
+                <ChevronLeft className="h-5 w-5 text-[var(--black-custom)]" />
+              ) : (
+                <ChevronRight className="h-5 w-5 text-[var(--black-custom)]" />
+              )}
+            </button>
           </div>
 
           {/* Navigasi Utama */}
           <nav className="flex flex-col gap-2">
-            <NavLinks pathname={pathname} onClose={handleClose} />
+            <NavLinks pathname={pathname} onClose={handleClose} isExpanded={isDesktopExpanded} />
           </nav>
 
-          <hr className="my-4 border-[var(--gray-custom)]" />
+          {isDesktopExpanded && <hr className="my-4 border-[var(--gray-custom)]" />}
 
           {/* Navigasi Bantuan & Setting */}
           <nav className="flex flex-col gap-2">
-            <UtilLinks pathname={pathname} onClose={handleClose} />
+            <UtilLinks pathname={pathname} onClose={handleClose} isExpanded={isDesktopExpanded} />
           </nav>
         </div>
 
         {/* Tombol Logout */}
-        <div>
+        <div className={`transition-opacity duration-300 ${isDesktopExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <Logout />
         </div>
       </aside>
