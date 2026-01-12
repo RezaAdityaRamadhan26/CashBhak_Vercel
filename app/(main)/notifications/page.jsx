@@ -1,12 +1,22 @@
 "use client";
 
 import { useNotifications } from "@/context/NotificationContext";
-import { Trash2, Bell, ArrowLeft } from "lucide-react";
+import { Trash2, Bell, ArrowLeft, Check, CheckCheck } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function NotificationsPage() {
-    const { notifications, removeNotification, clearAllNotifications } =
+    const { notifications, removeNotification, clearAllNotifications, markAsRead, markAllAsRead } =
         useNotifications();
+
+    // Mark all as read when component mounts
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            markAllAsRead();
+        }, 1000); // Wait 1 second before marking as read
+
+        return () => clearTimeout(timer);
+    }, [markAllAsRead]);
 
     const getNotificationIcon = (type) => {
         switch (type) {
@@ -60,10 +70,10 @@ export default function NotificationsPage() {
         const hours = Math.floor(diff / 3600000);
         const days = Math.floor(diff / 86400000);
 
-        if (minutes < 1) return "Just now";
-        if (minutes < 60) return `${minutes}m ago`;
-        if (hours < 24) return `${hours}h ago`;
-        if (days < 7) return `${days}d ago`;
+        if (minutes < 1) return "Baru saja";
+        if (minutes < 60) return `${minutes} menit lalu`;
+        if (hours < 24) return `${hours} jam lalu`;
+        if (days < 7) return `${days} hari lalu`;
 
         return new Date(date).toLocaleDateString("id-ID", {
             month: "short",
@@ -74,27 +84,32 @@ export default function NotificationsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pb-20">
             {/* Header */}
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                 <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <Link href="/dashboard" className="text-gray-500 hover:text-black transition-colors">
+                        <Link href="/dashboard" className="text-gray-500 hover:text-black transition-colors p-1 hover:bg-gray-100 rounded-lg">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                         <div className="flex items-center gap-2">
                             <Bell className="h-6 w-6 text-[var(--primary-custom)]" />
                             <h1 className="text-2xl font-bold text-[var(--black-custom)]" style={{ fontFamily: 'var(--font-poppins)' }}>
-                                Notifications
+                                Notifikasi
                             </h1>
                         </div>
+                        {notifications.length > 0 && (
+                            <span className="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded-full">
+                                {notifications.length}
+                            </span>
+                        )}
                     </div>
                     {notifications.length > 0 && (
                         <button
                             onClick={clearAllNotifications}
-                            className="text-sm text-red-600 hover:text-red-700 transition-colors font-medium"
+                            className="text-sm text-red-600 hover:text-red-700 transition-colors font-medium px-3 py-1.5 hover:bg-red-50 rounded-lg"
                         >
-                            Clear All
+                            Hapus Semua
                         </button>
                     )}
                 </div>
@@ -103,26 +118,32 @@ export default function NotificationsPage() {
             {/* Notifications List */}
             <div className="max-w-4xl mx-auto p-4">
                 {notifications.length === 0 ? (
-                    <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-                        <Bell className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <div className="bg-white rounded-lg border border-gray-200 p-12 text-center shadow-sm">
+                        <Bell className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                         <h2 className="text-xl font-semibold text-gray-600 mb-2">
-                            No Notifications
+                            Tidak Ada Notifikasi
                         </h2>
-                        <p className="text-gray-500">
-                            You&apos;re all caught up! Check back later for updates.
+                        <p className="text-gray-500 mb-6">
+                            Semua notifikasi Anda sudah dibaca. Periksa kembali nanti untuk pembaruan.
                         </p>
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary-custom)] text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+                        >
+                            Kembali ke Dashboard
+                        </Link>
                     </div>
                 ) : (
                     <div className="space-y-3">
                         {notifications.map((notif) => (
                             <div
                                 key={notif.id}
-                                className={`border rounded-lg p-4 flex items-start gap-4 bg-white hover:shadow-md transition-shadow ${getNotificationColor(
+                                className={`border rounded-lg p-4 flex items-start gap-4 bg-white hover:shadow-md transition-all ${getNotificationColor(
                                     notif.type
-                                )}`}
+                                )} ${!notif.isRead ? 'ring-2 ring-blue-200' : ''}`}
                             >
                                 <div
-                                    className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${getIconBgColor(
+                                    className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${getIconBgColor(
                                         notif.type
                                     )}`}
                                 >
@@ -130,21 +151,31 @@ export default function NotificationsPage() {
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-semibold text-[var(--black-custom)] text-sm md:text-base">
-                                        {notif.title}
-                                    </h3>
+                                    <div className="flex items-start justify-between gap-2">
+                                        <h3 className="font-semibold text-[var(--black-custom)] text-sm md:text-base">
+                                            {notif.title}
+                                        </h3>
+                                        {!notif.isRead && (
+                                            <span className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                                        )}
+                                    </div>
                                     {notif.description && (
-                                        <p className="text-gray-600 text-sm mt-1">{notif.description}</p>
+                                        <p className="text-gray-600 text-sm mt-1 leading-relaxed">{notif.description}</p>
                                     )}
-                                    <p className="text-gray-500 text-xs mt-2">
-                                        {formatTime(notif.timestamp)}
-                                    </p>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <p className="text-gray-500 text-xs">
+                                            {formatTime(notif.timestamp)}
+                                        </p>
+                                        {notif.isRead && (
+                                            <CheckCheck className="h-3 w-3 text-gray-400" />
+                                        )}
+                                    </div>
                                 </div>
 
                                 <button
                                     onClick={() => removeNotification(notif.id)}
-                                    className="flex-shrink-0 text-gray-400 hover:text-red-600 transition-colors p-1"
-                                    title="Delete notification"
+                                    className="flex-shrink-0 text-gray-400 hover:text-red-600 transition-colors p-2 hover:bg-red-50 rounded-lg"
+                                    title="Hapus notifikasi"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </button>

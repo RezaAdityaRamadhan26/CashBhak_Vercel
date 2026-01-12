@@ -1,8 +1,11 @@
 "use client";
 
 import { toast } from "sonner";
+import { useNotifications } from "@/context/NotificationContext";
 
-export default function ConfirmDeleteButton({ formId }) {
+export default function ConfirmDeleteButton({ formId, productName }) {
+    const { addNotification } = useNotifications();
+
     const onClick = () => {
         toast.custom((t) => (
             <div className="bg-white border rounded-md shadow-lg p-3 w-[300px]">
@@ -20,7 +23,15 @@ export default function ConfirmDeleteButton({ formId }) {
                         className="px-3 py-1.5 rounded-md text-white text-xs bg-red-500 hover:bg-red-600"
                         onClick={() => {
                             const form = document.getElementById(formId);
-                            form?.requestSubmit();
+                            if (form) {
+                                form.requestSubmit();
+                                toast.success("Produk berhasil dihapus");
+                                addNotification({
+                                    type: 'info',
+                                    title: 'Produk Dihapus',
+                                    description: `${productName || 'Produk'} telah dihapus dari items data.`,
+                                });
+                            }
                             toast.dismiss(t);
                         }}
                     >

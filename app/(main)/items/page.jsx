@@ -43,7 +43,7 @@ export default async function ItemsDataPage() {
                   <DialogEdit item={item} />
                   <form action={deleteData} id={`delete-${item.product_id}`}>
                     <input type="hidden" value={item.product_id} name="id" />
-                    <ConfirmDeleteButton formId={`delete-${item.product_id}`} />
+                    <ConfirmDeleteButton formId={`delete-${item.product_id}`} productName={item.product_name} />
                   </form>
 
                 </div>
