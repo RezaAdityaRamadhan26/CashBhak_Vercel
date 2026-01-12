@@ -17,10 +17,12 @@ import { Plus } from "lucide-react";
 import { pushProduct } from "@/lib/action";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
+import { useNotifications } from "@/context/NotificationContext";
 
 export function DialogAdd() {
   const [open, setOpen] = useState(false);
   const formRef = useRef(null);
+  const { addNotification } = useNotifications();
 
   async function handleSubmit(formData) {
     try {
@@ -28,6 +30,11 @@ export function DialogAdd() {
       setOpen(false); // Tutup dialog setelah berhasil
       formRef.current?.reset(); // Reset form
       toast.success("Produk berhasil ditambahkan");
+      addNotification({
+        type: 'success',
+        title: 'Produk Ditambahkan',
+        description: `${formData.get('product_name')} telah ditambahkan ke items data.`,
+      });
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error("Gagal menambahkan produk");

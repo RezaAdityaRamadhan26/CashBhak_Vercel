@@ -1,6 +1,7 @@
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import AppToaster from "@/components/Toaster";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +26,7 @@ export default function RootLayout({ children }) {
         className={`${inter.variable} ${poppins.variable} antialiased font-sans`}
         style={{ background: "var(--gray-custom)" }}
       >
-        {children}
+        <NotificationProvider>{children}</NotificationProvider>
         <AppToaster />
       </body>
     </html>

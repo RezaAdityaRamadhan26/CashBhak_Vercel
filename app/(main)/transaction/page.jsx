@@ -4,6 +4,7 @@ import Image from "next/image";
 import { fetchItems, createTransaction } from "@/lib/action";
 import { toast } from "sonner";
 import { CreditCard, Plus, Minus, Loader2 } from "lucide-react";
+import { useNotifications } from "@/context/NotificationContext";
 
 const paymentMethods = [
   { key: "cash", label: "Cash", icon: "/images/money.png" },
@@ -16,6 +17,7 @@ export default function TransactionPage() {
   const [cart, setCart] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [isLoading, setIsLoading] = useState(false);
+  const { addNotification } = useNotifications();
 
   useEffect(() => {
     fetchItems().then((data) => setItems(data || []));
@@ -90,6 +92,11 @@ export default function TransactionPage() {
       if (result.success) {
         const total = cart.reduce((sum, it) => sum + it.price * it.quantity, 0);
         toast.success('Checkout berhasil', {
+          description: `ID: ${result.transactionId} • Total: Rp. ${total.toLocaleString('id-ID')}`,
+        });
+        addNotification({
+          type: 'success',
+          title: 'Checkout Berhasil',
           description: `ID: ${result.transactionId} • Total: Rp. ${total.toLocaleString('id-ID')}`,
         });
         setCart([]);

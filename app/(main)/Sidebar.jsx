@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   ArrowLeftRight,
   Package,
-  HelpCircle,
   User,
   Menu,
   X,
@@ -26,7 +25,6 @@ const navItems = [
 
 const utilItems = [
   { name: 'Profile', href: '/profile', icon: User },
-  { name: 'Help & Support', href: '/help', icon: HelpCircle },
 ];
 
 // Navigation Links Component - Declared outside component to avoid re-creation
@@ -136,7 +134,7 @@ const Sidebar = () => {
         </div>
 
         {/* Tombol Logout */}
-        <div className={`transition-opacity duration-300 ${isDesktopExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div>
           <Logout />
         </div>
       </aside>

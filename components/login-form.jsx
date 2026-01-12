@@ -2,6 +2,7 @@
 "use client"
 import React from "react";
 import { toast } from "sonner";
+import { useNotifications } from "@/context/NotificationContext";
 
 import { signIn } from "next-auth/react"
 import { redirect } from "next/navigation"
@@ -19,6 +20,7 @@ import Link from "next/link"
 
 export function LoginForm({ className, ...props }) {
   const [showPassword, setShowPassword] = React.useState(false);
+  const { addNotification } = useNotifications();
 
   async function handleLogin(formData) {
     const response = await signIn("credentials", {
@@ -33,6 +35,11 @@ export function LoginForm({ className, ...props }) {
     }
 
     toast.success('Login berhasil!');
+    addNotification({
+      type: 'success',
+      title: 'Login Berhasil',
+      description: 'Anda telah berhasil masuk ke akun Anda.',
+    });
     redirect("/dashboard")
   }
 

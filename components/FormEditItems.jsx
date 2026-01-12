@@ -17,16 +17,23 @@ import { updateProduct } from "@/lib/action";
 import { Pencil } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
+import { useNotifications } from "@/context/NotificationContext";
 
 export function DialogEdit({ item }) {
   const [open, setOpen] = useState(false);
   const formRef = useRef(null);
+  const { addNotification } = useNotifications();
 
   async function handleSubmit(formData) {
     try {
       await updateProduct(formData);
       setOpen(false); // Tutup dialog setelah berhasil
       toast.success("Produk berhasil diperbarui");
+      addNotification({
+        type: 'success',
+        title: 'Produk Diperbarui',
+        description: `${formData.get('product_name')} telah diperbarui.`,
+      });
     } catch (error) {
       console.error("Error updating product:", error);
       toast.error("Gagal mengupdate produk");
