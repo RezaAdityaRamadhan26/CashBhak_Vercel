@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { fetchItems, createTransaction } from "@/lib/action";
 import { toast } from "sonner";
-import { CreditCard, Plus, Minus, Loader2, ShoppingCart, Package, Sparkles, Wallet, Banknote } from "lucide-react";
+import { CreditCard, Plus, Minus, Loader2, ShoppingCart, Package, Sparkles, Wallet, Banknote, ScanLine, X } from "lucide-react";
 import { useNotifications } from "@/context/NotificationContext";
+import BarcodeScanner from "@/components/BarcodeScanner";
 
 const paymentMethods = [
   { key: "cash", label: "Cash", icon: Banknote, color: "text-green-600" },
@@ -17,11 +18,40 @@ export default function TransactionPage() {
   const [cart, setCart] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [isLoading, setIsLoading] = useState(false);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { addNotification } = useNotifications();
 
   useEffect(() => {
     fetchItems().then((data) => setItems(data || []));
   }, []);
+
+  // Filter items based on search query or barcode
+  const filteredItems = items.filter((item) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      item.product_name?.toLowerCase().includes(query) ||
+      item.barcode?.toLowerCase().includes(query)
+    );
+  });
+
+  const handleBarcodeScan = (scannedValue) => {
+    // Find product by barcode
+    const foundItem = items.find((item) => item.barcode === scannedValue);
+
+    if (foundItem) {
+      if (foundItem.stock > 0) {
+        handleAddToCart(foundItem);
+        toast.success(`${foundItem.product_name} ditambahkan ke keranjang`);
+      } else {
+        toast.error(`${foundItem.product_name} stok habis`);
+      }
+    } else {
+      toast.error(`Produk dengan barcode "${scannedValue}" tidak ditemukan`);
+      // Set search query to show user what was scanned
+      setSearchQuery(scannedValue);
+    }
+  };
 
   const getCartQty = (product_id) => {
     const found = cart.find((i) => i.product_id === product_id);
@@ -116,24 +146,65 @@ export default function TransactionPage() {
       {/* Products Section */}
       <div className="w-full lg:w-2/3">
         <div className="bg-white p-6 rounded-2xl border border-gray-100">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-[var(--black-custom)]">Pilih Produk</h2>
-              <p className="text-sm text-gray-500">Klik untuk menambah ke keranjang</p>
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-[var(--black-custom)]">Pilih Produk</h2>
+                <p className="text-sm text-gray-500">Klik untuk menambah ke keranjang</p>
+              </div>
+              <div className="px-4 py-2 bg-[var(--primary-custom)]/10 rounded-xl">
+                <span className="text-sm font-medium text-[var(--primary-custom)]">{filteredItems.length} Produk</span>
+              </div>
             </div>
-            <div className="px-4 py-2 bg-[var(--primary-custom)]/10 rounded-xl">
-              <span className="text-sm font-medium text-[var(--primary-custom)]">{items.length} Produk</span>
+
+            {/* Search and Scan Section */}
+            <div className="flex gap-3">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Cari produk atau masukkan barcode..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-3 pl-10 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-custom)] focus:border-transparent transition-all"
+                />
+                <Package className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors"
+                    type="button"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => setShowBarcodeScanner(true)}
+                className="px-4 py-3 bg-gradient-to-r from-[var(--primary-custom)] to-[var(--blue-custom)] text-white rounded-xl font-medium hover:shadow-lg hover:shadow-[var(--primary-custom)]/30 transition-all flex items-center gap-2"
+                type="button"
+              >
+                <ScanLine className="h-5 w-5" />
+                <span className="hidden sm:inline">Scan</span>
+              </button>
             </div>
           </div>
 
-          {items.length === 0 ? (
+          {filteredItems.length === 0 ? (
             <div className="text-center py-12">
               <Package className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Tidak ada produk tersedia</p>
+              <p className="text-gray-500">{searchQuery ? `Tidak ditemukan produk dengan "${searchQuery}"` : "Tidak ada produk tersedia"}</p>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="mt-3 text-sm text-[var(--primary-custom)] hover:underline"
+                >
+                  Hapus pencarian
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-              {items.map((item) => {
+              {filteredItems.map((item) => {
                 const qty = getCartQty(item.product_id);
                 const isOutOfStock = item.stock === 0;
                 const isInCart = qty > 0;
@@ -358,6 +429,13 @@ export default function TransactionPage() {
           </div>
         </div>
       </div>
+
+      {/* Barcode Scanner Modal */}
+      <BarcodeScanner
+        isOpen={showBarcodeScanner}
+        onClose={() => setShowBarcodeScanner(false)}
+        onScanSuccess={handleBarcodeScan}
+      />
     </div>
   );
 }

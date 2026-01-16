@@ -57,9 +57,9 @@ export default function ConfirmDeleteButton({ formId, productName }) {
         <button
             type="button"
             onClick={onClick}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-red-500 text-white text-sm rounded-xl transition-all duration-200 hover:bg-red-600 active:scale-[0.98] font-medium"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-red-500 text-white text-xs rounded-lg transition-all duration-200 hover:bg-red-600 active:scale-[0.98] font-medium"
         >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
             Hapus
         </button>
     );

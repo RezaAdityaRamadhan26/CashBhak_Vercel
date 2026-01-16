@@ -9,14 +9,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { updateProduct } from "@/lib/action";
-import { Pencil, Package, DollarSign, Layers, ImageIcon, Loader2, Save } from "lucide-react";
+import { Pencil, Package, DollarSign, Layers, ImageIcon, Loader2, Save, ScanLine, Keyboard } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { useNotifications } from "@/context/NotificationContext";
+import BarcodeScanner from "@/components/BarcodeScanner";
 
 export function DialogEdit({ item }) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [barcode, setBarcode] = useState(item.barcode || "");
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [barcodeInputMode, setBarcodeInputMode] = useState("manual");
   const formRef = useRef(null);
   const { addNotification } = useNotifications();
 
@@ -39,11 +43,16 @@ export function DialogEdit({ item }) {
     }
   }
 
+  const handleBarcodeScan = (scannedValue) => {
+    setBarcode(scannedValue);
+    toast.success(`Barcode terdeteksi: ${scannedValue}`);
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--primary-custom)] text-white rounded-xl hover:bg-[var(--primary-custom)]/90 transition-all font-medium text-sm">
-          <Pencil className="h-4 w-4" />
+        <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--primary-custom)] text-white rounded-lg hover:bg-[var(--primary-custom)]/90 transition-all font-medium text-xs">
+          <Pencil className="h-3.5 w-3.5" />
           Edit
         </button>
       </DialogTrigger>
@@ -82,6 +91,52 @@ export function DialogEdit({ item }) {
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-[var(--black-custom)] placeholder:text-gray-400 focus:outline-none focus:border-[var(--primary-custom)] focus:ring-2 focus:ring-[var(--primary-custom)]/20 transition-all"
                 />
               </div>
+            </div>
+
+            {/* Barcode Section */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">Barcode Produk</label>
+                <div className="flex bg-gray-100 rounded-lg p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setBarcodeInputMode("manual")}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${barcodeInputMode === "manual"
+                      ? "bg-white text-[var(--primary-custom)] shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                      }`}
+                  >
+                    <Keyboard className="h-3 w-3" />
+                    Manual
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBarcodeInputMode("camera");
+                      setShowBarcodeScanner(true);
+                    }}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${barcodeInputMode === "camera"
+                      ? "bg-white text-[var(--primary-custom)] shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                      }`}
+                  >
+                    <ScanLine className="h-3 w-3" />
+                    Kamera
+                  </button>
+                </div>
+              </div>
+              <div className="relative">
+                <ScanLine className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="barcode"
+                  value={barcode}
+                  onChange={(e) => setBarcode(e.target.value)}
+                  placeholder="Masukkan atau scan barcode"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-[var(--black-custom)] placeholder:text-gray-400 focus:outline-none focus:border-[var(--primary-custom)] focus:ring-2 focus:ring-[var(--primary-custom)]/20 transition-all"
+                />
+              </div>
+              <p className="text-xs text-gray-400">Opsional - untuk scan cepat di halaman transaksi</p>
             </div>
 
             {/* Price and Stock */}
@@ -156,6 +211,13 @@ export function DialogEdit({ item }) {
             </button>
           </div>
         </form>
+
+        {/* Barcode Scanner Modal */}
+        <BarcodeScanner
+          isOpen={showBarcodeScanner}
+          onClose={() => setShowBarcodeScanner(false)}
+          onScanSuccess={handleBarcodeScan}
+        />
       </DialogContent>
     </Dialog>
   );

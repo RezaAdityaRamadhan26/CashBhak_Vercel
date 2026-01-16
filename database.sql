@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS products (
   product_id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL,
   product_name VARCHAR(255) NOT NULL,
+  barcode VARCHAR(100) DEFAULT NULL,
   price DECIMAL(10, 2) NOT NULL,
   stock INT NOT NULL DEFAULT 0,
   product_image LONGTEXT,
@@ -44,7 +45,8 @@ CREATE TABLE IF NOT EXISTS products (
   
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_user_id (user_id),
-  INDEX idx_product_name (product_name)
+  INDEX idx_product_name (product_name),
+  INDEX idx_barcode (barcode)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -163,3 +165,10 @@ INSERT INTO transaction_items (transaction_id, product_id, quantity, price_per_i
 -- LEFT JOIN transactions t ON u.id = t.user_id
 -- LEFT JOIN products p ON u.id = p.user_id
 -- GROUP BY u.id, u.username;
+
+-- ============================================================
+-- MIGRATION: Add barcode column to existing products table
+-- Jalankan query ini jika database sudah ada sebelumnya
+-- ============================================================
+-- ALTER TABLE products ADD COLUMN barcode VARCHAR(100) DEFAULT NULL AFTER product_name;
+-- ALTER TABLE products ADD INDEX idx_barcode (barcode);
