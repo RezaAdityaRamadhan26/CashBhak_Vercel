@@ -8,55 +8,65 @@ import {
   Calendar,
   Download,
   Loader2,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 import { fetchTransactionsForDashboard } from "@/lib/action";
 
-// --- 1. KOMPONEN STAT CARD ---
-const StatCard = ({ title, value, icon, iconBg }) => (
-  <div className="bg-white p-4 md:p-5 rounded-xl shadow-sm flex items-center justify-between">
-    <div className="flex-1 min-w-0">
-      <div className="text-xs sm:text-sm text-gray-500">{title}</div>
-      <div className="text-lg sm:text-xl md:text-2xl font-bold text-[var(--black-custom)] truncate">
-        {value}
+// Modern Stat Card Component
+const StatCard = ({ title, value, icon, iconBg, trend, trendUp }) => (
+  <div className="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300">
+    <div className="flex items-start justify-between">
+      <div className="flex-1">
+        <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
+        <h3 className="text-2xl font-bold text-[var(--black-custom)]">{value}</h3>
+        {trend && (
+          <div className={`flex items-center gap-1 mt-2 text-sm ${trendUp ? 'text-green-600' : 'text-red-500'}`}>
+            {trendUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+            <span className="font-medium">{trend}</span>
+            <span className="text-gray-400 text-xs">vs bulan lalu</span>
+          </div>
+        )}
       </div>
+      <div className={`p-3 rounded-xl ${iconBg}`}>{icon}</div>
     </div>
-    <div className={`p-2 md:p-3 rounded-full flex-shrink-0 ${iconBg}`}>{icon}</div>
   </div>
 );
 
-// --- 2. KOMPONEN MONTHLY SALES CHART (PERBAIKAN CSS) ---
+// Modern Monthly Sales Chart
 const MonthlySalesChart = ({ data }) => {
   const maxValue = Math.max(...data.map((d) => d.total), 1);
 
   return (
-    <div className="bg-white p-4 md:p-5 rounded-xl shadow-sm h-full flex flex-col">
-      <h3 className="text-base md:text-lg font-semibold text-[var(--black-custom)] mb-4 md:mb-6">
-        Monthly Sales (Tahun Terfilter)
-      </h3>
-      {/* Hapus 'items-end' di sini, biarkan anak elemen mengatur tingginya */}
-      <div className="flex justify-between flex-1 px-2 gap-1 sm:gap-2 h-48 sm:h-56 md:h-64">
-        {data.map((d) => {
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 h-full">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-[var(--black-custom)]">Penjualan Bulanan</h3>
+          <p className="text-sm text-gray-500">Tahun ini</p>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg">
+          <TrendingUp className="w-4 h-4 text-green-600" />
+          <span className="text-sm font-medium text-green-600">+12.5%</span>
+        </div>
+      </div>
+
+      <div className="flex items-end justify-between gap-2 h-52">
+        {data.map((d, index) => {
           const heightPercent = (d.total / maxValue) * 100;
-
           return (
-            // PERBAIKAN DI SINI: 
-            // - h-full: Agar container memenuhi tinggi chart
-            // - justify-end: Agar bar turun ke bawah (seperti grafik batang pada umumnya)
-            <div key={d.month} className="flex flex-col items-center justify-end gap-1 sm:gap-2 w-full h-full group relative">
-
+            <div key={d.month} className="flex flex-col items-center justify-end gap-2 flex-1 h-full group">
               {/* Tooltip */}
-              <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 text-xs bg-gray-800 text-white px-2 py-1 rounded transition-opacity pointer-events-none whitespace-nowrap z-10">
+              <div className="opacity-0 group-hover:opacity-100 absolute -mt-10 text-xs bg-gray-900 text-white px-2 py-1 rounded transition-opacity whitespace-nowrap z-10">
                 Rp {(d.total / 1000).toFixed(0)}k
               </div>
-
-              {/* Bar Batang */}
+              {/* Bar */}
               <div
-                className="w-full max-w-[20px] sm:max-w-[30px] bg-[#D1F2EB] rounded-t-lg transition-all duration-500 hover:bg-[var(--primary-custom)]/40"
-                style={{ height: `${heightPercent}%` }}
-              ></div>
-
-              {/* Label Bulan */}
-              <span className="text-[10px] sm:text-xs text-gray-400">{d.month}</span>
+                className="w-full max-w-[28px] bg-gradient-to-t from-[var(--primary-custom)] to-[var(--primary-custom)]/60 rounded-t-lg transition-all duration-500 hover:from-[var(--primary-custom)] hover:to-[var(--blue-custom)] cursor-pointer"
+                style={{ height: `${Math.max(heightPercent, 4)}%` }}
+              />
+              {/* Month Label */}
+              <span className="text-xs text-gray-400 font-medium">{d.month}</span>
             </div>
           );
         })}
@@ -65,11 +75,8 @@ const MonthlySalesChart = ({ data }) => {
   );
 };
 
-// --- 3. KOMPONEN PIE CHART ---
+// Modern Pie Chart
 const SalesSourceChart = ({ data, totalAmount }) => {
-  const cashEnd = data.cash;
-  const bankEnd = cashEnd + data.bank;
-
   const formatRupiah = (number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -78,68 +85,62 @@ const SalesSourceChart = ({ data, totalAmount }) => {
     }).format(number);
   };
 
+  const cashEnd = data.cash;
+  const bankEnd = cashEnd + data.bank;
+
+  const sources = [
+    { label: "Cash", value: data.cash, color: "bg-[var(--primary-custom)]", ring: "ring-[var(--primary-custom)]" },
+    { label: "Card", value: data.bank, color: "bg-blue-500", ring: "ring-blue-500" },
+    { label: "E-Wallet", value: data.ewallet, color: "bg-yellow-400", ring: "ring-yellow-400" },
+  ];
+
   return (
-    <div className="bg-white p-4 md:p-5 rounded-xl shadow-sm h-full flex flex-col justify-between">
-      <div className="mb-3 md:mb-4">
-        <h3 className="text-base md:text-lg font-semibold text-[var(--black-custom)]">
-          Origin of sales
-        </h3>
-        <span className="text-xs text-gray-400">Based on filtered date</span>
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 h-full">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-[var(--black-custom)]">Sumber Penjualan</h3>
+        <p className="text-sm text-gray-500">Berdasarkan metode pembayaran</p>
       </div>
 
-      <div className="text-2xl md:text-3xl font-bold text-[var(--black-custom)] mb-4 md:mb-6">
-        {formatRupiah(totalAmount)}
+      <div className="text-center mb-6">
+        <p className="text-sm text-gray-500">Total Penjualan</p>
+        <p className="text-3xl font-bold text-[var(--black-custom)]">{formatRupiah(totalAmount)}</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+      <div className="flex justify-center mb-6">
         <div
-          className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full flex-shrink-0 transition-all duration-500"
+          className="relative w-36 h-36 rounded-full"
           style={{
             background: `conic-gradient(
-              #EF4444 0% ${cashEnd}%, 
+              var(--primary-custom) 0% ${cashEnd}%, 
               #3B82F6 ${cashEnd}% ${bankEnd}%, 
               #FACC15 ${bankEnd}% 100%
             )`,
           }}
         >
-          <div className="absolute inset-3 bg-white rounded-full shadow-inner"></div>
+          <div className="absolute inset-4 bg-white rounded-full flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-[var(--black-custom)]">100%</p>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-4 w-full">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-red-500"></span>
-              <span className="text-sm text-gray-500">Cash</span>
+      <div className="space-y-3">
+        {sources.map((source) => (
+          <div key={source.label} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${source.color}`}></div>
+              <span className="text-sm font-medium text-gray-700">{source.label}</span>
             </div>
-            <span className="text-sm font-bold text-[var(--black-custom)]">
-              {data.cash.toFixed(1)}%
-            </span>
+            <span className="text-sm font-bold text-[var(--black-custom)]">{source.value.toFixed(1)}%</span>
           </div>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-blue-500"></span>
-              <span className="text-sm text-gray-500">Card</span>
-            </div>
-            <span className="text-sm font-bold text-[var(--black-custom)]">
-              {data.bank.toFixed(1)}%
-            </span>
-          </div>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-yellow-400"></span>
-              <span className="text-sm text-gray-500">E-Wallet</span>
-            </div>
-            <span className="text-sm font-bold text-[var(--black-custom)]">
-              {data.ewallet.toFixed(1)}%
-            </span>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
 };
 
-// --- 4. MAIN COMPONENT ---
+// Main Dashboard Component
 export default function DashboardPage() {
   const [orderHistory, setOrderHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -175,7 +176,6 @@ export default function DashboardPage() {
         if (data && data.length > 0) {
           const today = new Date();
           const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-          // Format YYYY-MM-DD untuk input
           setStartDate(firstDay.toLocaleDateString('en-CA'));
           setEndDate(today.toLocaleDateString('en-CA'));
         }
@@ -294,61 +294,67 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="w-full relative">
+    <div className="w-full space-y-6">
+      {/* Alert Message */}
       {message && (
-        <div className={`fixed top-20 sm:top-24 right-3 sm:right-6 z-50 p-3 sm:p-4 rounded-lg shadow-lg text-sm sm:text-base ${message.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-          {message.text}
-          <button onClick={() => setMessage(null)} className="ml-2 sm:ml-4 font-bold">X</button>
+        <div className={`fixed top-20 right-4 z-50 p-4 rounded-xl shadow-lg ${message.type === "success" ? "bg-green-500" : "bg-red-500"} text-white flex items-center gap-3`}>
+          <span>{message.text}</span>
+          <button onClick={() => setMessage(null)} className="font-bold hover:opacity-80">✕</button>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
+      {/* Date Filters */}
+      <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-2xl border border-gray-100">
         <div className="flex-1">
-          <label className="block text-xs sm:text-sm font-medium text-[var(--black-custom)] mb-1">Start Date</label>
-          <div className="relative">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-200 rounded-lg bg-white outline-none focus:border-[var(--primary-custom)] transition-colors"
-            />
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[var(--primary-custom)] focus:ring-2 focus:ring-[var(--primary-custom)]/20 transition-all"
+          />
         </div>
         <div className="flex-1">
-          <label className="block text-xs sm:text-sm font-medium text-[var(--black-custom)] mb-1">End Date</label>
-          <div className="relative">
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-200 rounded-lg bg-white outline-none focus:border-[var(--primary-custom)] transition-colors"
-            />
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Akhir</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[var(--primary-custom)] focus:ring-2 focus:ring-[var(--primary-custom)]/20 transition-all"
+          />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
-          title="Total Sale"
+          title="Total Penjualan"
           value={formatRupiah(stats.totalSale)}
           icon={<DollarSign className="h-6 w-6 text-yellow-600" />}
           iconBg="bg-yellow-100"
+          trend="+12.5%"
+          trendUp={true}
         />
         <StatCard
-          title="Total Transaction"
+          title="Total Transaksi"
           value={stats.uniqueTransactions}
           icon={<ClipboardList className="h-6 w-6 text-[var(--primary-custom)]" />}
           iconBg="bg-[var(--primary-custom)]/20"
+          trend="+8.2%"
+          trendUp={true}
         />
         <StatCard
-          title="Total Items Sold"
+          title="Item Terjual"
           value={stats.totalItems}
           icon={<Package className="h-6 w-6 text-blue-500" />}
           iconBg="bg-blue-100"
+          trend="+15.3%"
+          trendUp={true}
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <MonthlySalesChart data={monthlyData} />
         </div>
@@ -357,52 +363,72 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-white p-3 sm:p-4 md:p-5 rounded-xl shadow-sm">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4">
-          <h2 className="text-lg md:text-xl font-semibold text-[var(--black-custom)]">Order History</h2>
-          <button onClick={handleExportPDF} className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base bg-[var(--primary-custom)] text-white rounded-lg hover:opacity-90 transition-opacity">
-            <Download className="h-3 w-3 sm:h-4 sm:w-4" /> <span className="hidden sm:inline">Print / Save as PDF</span><span className="sm:hidden">Export</span>
+      {/* Order History Table */}
+      <div className="bg-white p-6 rounded-2xl border border-gray-100">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-semibold text-[var(--black-custom)]">Riwayat Pesanan</h2>
+            <p className="text-sm text-gray-500">Daftar transaksi terbaru</p>
+          </div>
+          <button
+            onClick={handleExportPDF}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--primary-custom)] text-white rounded-xl hover:bg-[var(--primary-custom)]/90 transition-all font-medium shadow-lg shadow-[var(--primary-custom)]/30"
+          >
+            <Download className="h-4 w-4" />
+            <span>Export PDF</span>
           </button>
         </div>
-        <div className="overflow-x-auto -mx-3 sm:mx-0">
-          <div className="inline-block min-w-full align-middle">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b bg-gray-50 text-gray-600 uppercase text-xs sm:text-sm">
-                  <th className="py-2 sm:py-3 px-2 sm:px-4">ID</th>
-                  <th className="py-2 sm:py-3 px-2 sm:px-4">Items</th>
-                  <th className="py-2 sm:py-3 px-2 sm:px-4">Qty</th>
-                  <th className="py-2 sm:py-3 px-2 sm:px-4">Amount</th>
-                  <th className="py-2 sm:py-3 px-2 sm:px-4 hidden sm:table-cell">Sales</th>
-                  <th className="py-2 sm:py-3 px-2 sm:px-4 hidden md:table-cell">Date</th>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Item</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Qty</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Jumlah</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Metode</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Tanggal</th>
+              </tr>
+            </thead>
+            <tbody className="text-[var(--black-custom)]">
+              {isLoading ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-[var(--primary-custom)]" />
+                    <p className="text-sm text-gray-500 mt-2">Memuat data...</p>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="text-[var(--black-custom)]">
-                {isLoading ? (
-                  <tr><td colSpan="6" className="text-center py-6 sm:py-10 text-gray-500"><Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin mx-auto" /><span className="text-xs sm:text-sm">Memuat data...</span></td></tr>
-                ) : filteredData.length === 0 ? (
-                  <tr><td colSpan="6" className="text-center py-6 sm:py-10 text-xs sm:text-sm text-gray-500">Tidak ada data pada rentang tanggal ini.</td></tr>
-                ) : (
-                  filteredData.map((order, index) => (
-                    <tr key={`${order.id}-${order.name}-${index}`} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-xs sm:text-sm">#{order.id}</td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{order.name}</td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">{order.qty}</td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">{formatRupiah(order.amount)}</td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 hidden sm:table-cell">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${order.sales?.toUpperCase().includes("E-WALLET") ? "bg-blue-100 text-blue-600" :
-                          order.sales?.toUpperCase().includes("CASH") ? "bg-[var(--primary-custom)]/20 text-[var(--primary-custom)]" : "bg-yellow-100 text-yellow-700"
-                          }`}>
-                          {order.sales}
-                        </span>
-                      </td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-500 hidden md:table-cell">{formatTanggal(order.date)}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+              ) : filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-12">
+                    <Package className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+                    <p className="text-gray-500">Tidak ada data pada rentang tanggal ini</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredData.map((order, index) => (
+                  <tr key={`${order.id}-${order.name}-${index}`} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-4 px-4 font-medium text-sm">#{order.id}</td>
+                    <td className="py-4 px-4 text-sm">{order.name}</td>
+                    <td className="py-4 px-4 text-sm">{order.qty}</td>
+                    <td className="py-4 px-4 text-sm font-semibold">{formatRupiah(order.amount)}</td>
+                    <td className="py-4 px-4 hidden sm:table-cell">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${order.sales?.toUpperCase().includes("E-WALLET")
+                          ? "bg-blue-100 text-blue-700"
+                          : order.sales?.toUpperCase().includes("CASH")
+                            ? "bg-[var(--primary-custom)]/10 text-[var(--primary-custom)]"
+                            : "bg-yellow-100 text-yellow-700"
+                        }`}>
+                        {order.sales}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 text-sm text-gray-500 hidden md:table-cell">{formatTanggal(order.date)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

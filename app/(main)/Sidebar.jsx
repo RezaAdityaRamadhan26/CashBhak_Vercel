@@ -16,18 +16,16 @@ import {
 } from 'lucide-react';
 import Logout from '@/components/log-out';
 
-// Navigation items
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Transaction', href: '/transaction', icon: ArrowLeftRight },
-  { name: 'Items Data', href: '/items', icon: Package },
+  { name: 'Transaksi', href: '/transaction', icon: ArrowLeftRight },
+  { name: 'Produk', href: '/items', icon: Package },
 ];
 
 const utilItems = [
-  { name: 'Profile', href: '/profile', icon: User },
+  { name: 'Profil', href: '/profile', icon: User },
 ];
 
-// Navigation Links Component - Declared outside component to avoid re-creation
 const NavLinks = ({ pathname, onClose, isExpanded }) => (
   <>
     {navItems.map((item) => {
@@ -37,22 +35,20 @@ const NavLinks = ({ pathname, onClose, isExpanded }) => (
           key={item.name}
           href={item.href}
           onClick={onClose}
-          className={`flex items-center gap-3 rounded-lg p-3 transition-colors whitespace-nowrap ${isActive
-            ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-            : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+          className={`flex items-center gap-3 rounded-xl p-3 transition-all duration-200 group ${isActive
+            ? 'bg-[var(--primary-custom)] text-white shadow-lg shadow-[var(--primary-custom)]/30'
+            : 'text-gray-600 hover:bg-gray-100'
             }`}
-          style={{ fontFamily: 'var(--font-poppins)' }}
           title={!isExpanded ? item.name : ''}
         >
-          <item.icon className="h-5 w-5 flex-shrink-0" />
-          {isExpanded && <span className="text-sm">{item.name}</span>}
+          <item.icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${!isActive && 'group-hover:scale-110'}`} />
+          {isExpanded && <span className="text-sm font-medium">{item.name}</span>}
         </Link>
       );
     })}
   </>
 );
 
-// Utility Links Component - Declared outside component to avoid re-creation
 const UtilLinks = ({ pathname, onClose, isExpanded }) => (
   <>
     {utilItems.map((item) => {
@@ -62,15 +58,14 @@ const UtilLinks = ({ pathname, onClose, isExpanded }) => (
           key={item.name}
           href={item.href}
           onClick={onClose}
-          className={`flex items-center gap-3 rounded-lg p-3 transition-colors whitespace-nowrap ${isActive
-            ? 'bg-[var(--gray-custom)] text-[var(--black-custom)] font-semibold'
-            : 'text-[var(--black-custom)] hover:bg-[var(--gray-custom)]'
+          className={`flex items-center gap-3 rounded-xl p-3 transition-all duration-200 group ${isActive
+            ? 'bg-[var(--primary-custom)] text-white shadow-lg shadow-[var(--primary-custom)]/30'
+            : 'text-gray-600 hover:bg-gray-100'
             }`}
-          style={{ fontFamily: 'var(--font-poppins)' }}
           title={!isExpanded ? item.name : ''}
         >
-          <item.icon className="h-5 w-5 flex-shrink-0" />
-          {isExpanded && <span className="text-sm">{item.name}</span>}
+          <item.icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${!isActive && 'group-hover:scale-110'}`} />
+          {isExpanded && <span className="text-sm font-medium">{item.name}</span>}
         </Link>
       );
     })}
@@ -86,117 +81,115 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Desktop Sidebar - Toggle Expand/Collapse */}
+      {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex relative h-screen flex-col justify-between p-2 md:p-4 pt-4 md:pt-6 shadow-lg transition-all duration-300 ease-in-out overflow-hidden ${isDesktopExpanded ? 'w-64' : 'w-20'
+        className={`hidden md:flex relative h-screen flex-col justify-between p-4 pt-6 transition-all duration-300 ease-in-out overflow-hidden border-r border-gray-100 ${isDesktopExpanded ? 'w-64' : 'w-20'
           }`}
-        style={{ backgroundColor: 'var(--light-custom)' }}
+        style={{ backgroundColor: 'white' }}
       >
         <div>
-          {/* Sidebar Header with Toggle */}
-          <div className="flex items-center justify-between mb-6 px-1">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8 px-1">
             <div className="flex items-center gap-3">
-              <Image src="/images/logo.png" alt="Logo" width={32} height={32} className="flex-shrink-0" />
+              <div className="w-10 h-10 bg-gradient-to-br from-[var(--primary-custom)] to-[var(--blue-custom)] rounded-xl flex items-center justify-center shadow-lg shadow-[var(--primary-custom)]/30">
+                <Image src="/images/logo.png" alt="Logo" width={24} height={24} className="flex-shrink-0" />
+              </div>
               {isDesktopExpanded && (
-                <span
-                  className="text-xl font-bold text-[var(--black-custom)] inline whitespace-nowrap"
-                  style={{ fontFamily: 'var(--font-poppins)' }}
-                >
+                <span className="text-xl font-bold text-[var(--black-custom)]" style={{ fontFamily: 'var(--font-poppins)' }}>
                   CashBhak
                 </span>
               )}
             </div>
             <button
               onClick={toggleDesktopSidebar}
-              className="p-1 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+              className="p-2 hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0"
               aria-label="Toggle sidebar"
-              title={isDesktopExpanded ? 'Collapse' : 'Expand'}
             >
               {isDesktopExpanded ? (
-                <ChevronLeft className="h-5 w-5 text-[var(--black-custom)]" />
+                <ChevronLeft className="h-5 w-5 text-gray-400" />
               ) : (
-                <ChevronRight className="h-5 w-5 text-[var(--black-custom)]" />
+                <ChevronRight className="h-5 w-5 text-gray-400" />
               )}
             </button>
           </div>
 
-          {/* Navigasi Utama */}
+          {/* Menu Label */}
+          {isDesktopExpanded && (
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">Menu</p>
+          )}
+
+          {/* Navigation */}
           <nav className="flex flex-col gap-2">
             <NavLinks pathname={pathname} onClose={handleClose} isExpanded={isDesktopExpanded} />
           </nav>
 
-          {isDesktopExpanded && <hr className="my-4 border-[var(--gray-custom)]" />}
+          {isDesktopExpanded && <div className="my-6 border-t border-gray-100"></div>}
 
-          {/* Navigasi Bantuan & Setting */}
+          {/* Settings Label */}
+          {isDesktopExpanded && (
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">Pengaturan</p>
+          )}
+
+          {/* Utility Links */}
           <nav className="flex flex-col gap-2">
             <UtilLinks pathname={pathname} onClose={handleClose} isExpanded={isDesktopExpanded} />
           </nav>
         </div>
 
-        {/* Tombol Logout */}
-        <div>
+        {/* Logout */}
+        <div className="border-t border-gray-100 pt-4">
           <Logout />
         </div>
       </aside>
 
-      {/* Mobile Hamburger Menu - Fixed Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md p-4 flex items-center justify-between h-16">
-        <div className="flex items-center gap-2">
-          <Image src="/images/logo.png" alt="Logo" width={32} height={32} />
-          <span
-            className="font-bold text-[var(--black-custom)]"
-            style={{ fontFamily: 'var(--font-poppins)' }}
-          >
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 p-4 flex items-center justify-between h-16">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-[var(--primary-custom)] to-[var(--blue-custom)] rounded-lg flex items-center justify-center">
+            <Image src="/images/logo.png" alt="Logo" width={20} height={20} />
+          </div>
+          <span className="font-bold text-[var(--black-custom)]" style={{ fontFamily: 'var(--font-poppins)' }}>
             CashBhak
           </span>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
           aria-label="Toggle menu"
         >
-          <span className={`inline-flex transition-transform duration-300 ${isOpen ? 'rotate-90 scale-95' : 'rotate-0 scale-100'}`}>
-            {isOpen ? (
-              <X className="h-6 w-6 text-[var(--black-custom)]" />
-            ) : (
-              <Menu className="h-6 w-6 text-[var(--black-custom)]" />
-            )}
-          </span>
+          {isOpen ? (
+            <X className="h-6 w-6 text-gray-600" />
+          ) : (
+            <Menu className="h-6 w-6 text-gray-600" />
+          )}
         </button>
       </div>
 
-      {/* Mobile Menu Drawer (animated) */}
+      {/* Mobile Menu Drawer */}
       <div className={`md:hidden fixed inset-0 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        {/* Overlay Backdrop */}
         <div
-          className={`absolute inset-0 bg-black transition-opacity duration-300 ${isOpen ? 'opacity-50' : 'opacity-0'}`}
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={handleClose}
         />
-
-        {/* Drawer Menu */}
         <div
-          className={`absolute left-0 top-0 h-full w-64 shadow-lg flex flex-col justify-between p-4 pt-20 overflow-y-auto transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          className={`absolute left-0 top-0 h-full w-72 bg-white shadow-2xl flex flex-col justify-between p-4 pt-20 overflow-y-auto transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
           onClick={(e) => e.stopPropagation()}
-          style={{ backgroundColor: 'var(--light-custom)' }}
         >
           <div>
-            {/* Navigasi Utama */}
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">Menu</p>
             <nav className="flex flex-col gap-2 mb-6">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Menu</h3>
-              <NavLinks pathname={pathname} onClose={handleClose} />
+              <NavLinks pathname={pathname} onClose={handleClose} isExpanded={true} />
             </nav>
 
-            <hr className="my-2 border-[var(--gray-custom)]" />
+            <div className="my-4 border-t border-gray-100"></div>
 
-            {/* Navigasi Bantuan */}
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">Pengaturan</p>
             <nav className="flex flex-col gap-2">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase px-3 mb-2">Settings</h3>
-              <UtilLinks pathname={pathname} onClose={handleClose} />
+              <UtilLinks pathname={pathname} onClose={handleClose} isExpanded={true} />
             </nav>
           </div>
 
-          {/* Logout Button */}
-          <div>
+          <div className="border-t border-gray-100 pt-4">
             <Logout />
           </div>
         </div>

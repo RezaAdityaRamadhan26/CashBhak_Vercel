@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { fetchItems, createTransaction } from "@/lib/action";
 import { toast } from "sonner";
-import { CreditCard, Plus, Minus, Loader2 } from "lucide-react";
+import { CreditCard, Plus, Minus, Loader2, ShoppingCart, Package, Sparkles, Wallet, Banknote } from "lucide-react";
 import { useNotifications } from "@/context/NotificationContext";
 
 const paymentMethods = [
-  { key: "cash", label: "Cash", icon: "/images/money.png" },
-  { key: "ewallet", label: "E-Wallet", icon: "/images/wallet.png" },
-  { key: "card", label: "Card", icon: "/images/credit-card.png" },
+  { key: "cash", label: "Cash", icon: Banknote, color: "text-green-600" },
+  { key: "ewallet", label: "E-Wallet", icon: Wallet, color: "text-blue-600" },
+  { key: "card", label: "Card", icon: CreditCard, color: "text-purple-600" },
 ];
 
 export default function TransactionPage() {
@@ -75,6 +75,8 @@ export default function TransactionPage() {
     0
   );
 
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+
   const handleOrderProcess = async () => {
     if (cart.length === 0) {
       toast.warning("Keranjang Anda kosong");
@@ -92,12 +94,12 @@ export default function TransactionPage() {
       if (result.success) {
         const total = cart.reduce((sum, it) => sum + it.price * it.quantity, 0);
         toast.success('Checkout berhasil', {
-          description: `ID: ${result.transactionId} • Total: Rp. ${total.toLocaleString('id-ID')}`,
+          description: `ID: ${result.transactionId} • Total: Rp ${total.toLocaleString('id-ID')}`,
         });
         addNotification({
           type: 'success',
           title: 'Checkout Berhasil',
-          description: `ID: ${result.transactionId} • Total: Rp. ${total.toLocaleString('id-ID')}`,
+          description: `ID: ${result.transactionId} • Total: Rp ${total.toLocaleString('id-ID')}`,
         });
         setCart([]);
         fetchItems().then((data) => setItems(data || []));
@@ -110,180 +112,247 @@ export default function TransactionPage() {
   };
 
   return (
-    <div className="w-full flex flex-col lg:flex-row gap-4 md:gap-6">
+    <div className="w-full flex flex-col lg:flex-row gap-6">
+      {/* Products Section */}
       <div className="w-full lg:w-2/3">
-        <div className="bg-white p-3 sm:p-4 md:p-5 rounded-xl shadow-sm">
-          <h2 className="text-lg md:text-xl font-semibold text-[var(--black-custom)] mb-4">Products</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-            {items.map((item) => {
-              const qty = getCartQty(item.product_id);
-              return (
-                <div
-                  className="bg-white rounded-lg shadow-sm overflow-hidden"
-                  key={item.product_id}
-                >
-                  <Image
-                    src={item.product_image}
-                    alt={item.product_name || "Product Image"}
-                    width={200}
-                    height={150}
-                    className="w-full h-32 object-cover"
-                  />
-                  <div className="p-4 flex flex-col gap-2">
-                    <h3 className="text-lg font-semibold text-[var(--black-custom)]">
-                      {item.product_name}
-                    </h3>
-                    <p className="text-sm text-gray-500">Stock: {item.stock}</p>
-                    <p className="text-[var(--primary-custom)] font-bold">
-                      Rp. {item.price?.toLocaleString("id-ID")}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-                        onClick={() => handleRemoveFromCart(item)}
-                        disabled={qty === 0}
-                        type="button"
-                      >
-                        <Minus className="h-4 w-4 text-gray-700" />
-                      </button>
-                      <span className="w-8 text-center font-medium">{qty}</span>
-                      <button
-                        className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-                        onClick={() => handleAddToCart(item)}
-                        disabled={qty >= item.stock}
-                        type="button"
-                      >
-                        <Plus className="h-4 w-4 text-gray-700" />
-                      </button>
+        <div className="bg-white p-6 rounded-2xl border border-gray-100">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-[var(--black-custom)]">Pilih Produk</h2>
+              <p className="text-sm text-gray-500">Klik untuk menambah ke keranjang</p>
+            </div>
+            <div className="px-4 py-2 bg-[var(--primary-custom)]/10 rounded-xl">
+              <span className="text-sm font-medium text-[var(--primary-custom)]">{items.length} Produk</span>
+            </div>
+          </div>
+
+          {items.length === 0 ? (
+            <div className="text-center py-12">
+              <Package className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500">Tidak ada produk tersedia</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+              {items.map((item) => {
+                const qty = getCartQty(item.product_id);
+                const isOutOfStock = item.stock === 0;
+                const isInCart = qty > 0;
+
+                return (
+                  <div
+                    className={`relative bg-white rounded-2xl border overflow-hidden transition-all duration-300 group ${isInCart
+                        ? 'border-[var(--primary-custom)] shadow-lg shadow-[var(--primary-custom)]/20'
+                        : 'border-gray-100 hover:border-gray-200 hover:shadow-md'
+                      } ${isOutOfStock ? 'opacity-60' : ''}`}
+                    key={item.product_id}
+                  >
+                    {/* Cart Badge */}
+                    {isInCart && (
+                      <div className="absolute top-3 left-3 z-10 w-7 h-7 bg-[var(--primary-custom)] rounded-full flex items-center justify-center shadow-lg">
+                        <span className="text-white text-xs font-bold">{qty}</span>
+                      </div>
+                    )}
+
+                    {/* Out of Stock Overlay */}
+                    {isOutOfStock && (
+                      <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
+                        <span className="px-3 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-full">Habis</span>
+                      </div>
+                    )}
+
+                    {/* Image */}
+                    <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                      <Image
+                        src={item.product_image}
+                        alt={item.product_name || "Product Image"}
+                        fill
+                        className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4">
+                      <h3 className="font-semibold text-[var(--black-custom)] truncate text-sm">
+                        {item.product_name}
+                      </h3>
+                      <p className="text-xs text-gray-400 mt-1">Stok: {item.stock}</p>
+                      <p className="text-lg font-bold text-[var(--primary-custom)] mt-1">
+                        Rp {item.price?.toLocaleString("id-ID")}
+                      </p>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center justify-between mt-3">
+                        <button
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${qty === 0
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-red-100 text-red-600 hover:bg-red-200'
+                            }`}
+                          onClick={() => handleRemoveFromCart(item)}
+                          disabled={qty === 0}
+                          type="button"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="font-bold text-[var(--black-custom)]">{qty}</span>
+                        <button
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${qty >= item.stock
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-[var(--primary-custom)] text-white hover:bg-[var(--primary-custom)]/90 shadow-lg shadow-[var(--primary-custom)]/30'
+                            }`}
+                          onClick={() => handleAddToCart(item)}
+                          disabled={qty >= item.stock}
+                          type="button"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Cart Section */}
       <div className="w-full lg:w-1/3 lg:sticky lg:top-6 lg:h-fit">
-        <div className="bg-white p-3 sm:p-4 md:p-5 rounded-xl shadow-sm min-w-0">
-          <h2 className="text-lg md:text-xl font-semibold text-[var(--black-custom)] mb-4">
-            Cart Items
-          </h2>
-          <div className="max-h-60 sm:max-h-80 overflow-y-auto divide-y divide-gray-200 pr-2">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100">
+          {/* Cart Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-[var(--primary-custom)]/10 rounded-xl flex items-center justify-center">
+                <ShoppingCart className="h-6 w-6 text-[var(--primary-custom)]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-[var(--black-custom)]">Keranjang</h2>
+                <p className="text-sm text-gray-500">{totalItems} item</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Cart Items */}
+          <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2 scrollbar-thin">
             {cart.length === 0 ? (
-              <p className="text-gray-500 text-center py-6 sm:py-10 text-sm sm:text-base">Cart is empty</p>
+              <div className="text-center py-10">
+                <ShoppingCart className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+                <p className="text-gray-500 text-sm">Keranjang masih kosong</p>
+                <p className="text-gray-400 text-xs mt-1">Pilih produk untuk memulai</p>
+              </div>
             ) : (
               cart.map((item) => (
                 <div
                   key={item.product_id}
-                  className="flex items-start sm:items-center justify-between py-2 sm:py-3 gap-2"
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
                 >
-                  <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                    <Image
-                      src={item.product_image}
-                      alt={item.product_name}
-                      width={56}
-                      height={56}
-                      className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg object-cover flex-shrink-0"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-semibold text-sm sm:text-base text-[var(--black-custom)] truncate">
-                        {item.product_name}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-gray-500">
-                        Rp. {item.price?.toLocaleString("id-ID")}
-                      </p>
-                    </div>
+                  <Image
+                    src={item.product_image}
+                    alt={item.product_name}
+                    width={56}
+                    height={56}
+                    className="w-14 h-14 rounded-xl object-cover bg-white"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm text-[var(--black-custom)] truncate">
+                      {item.product_name}
+                    </h4>
+                    <p className="text-xs text-gray-500">
+                      Rp {item.price?.toLocaleString("id-ID")} × {item.quantity}
+                    </p>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 flex-shrink-0">
-                    <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 bg-white rounded-lg p-1 border border-gray-200">
                       <button
                         onClick={() => handleUpdateQty(item.product_id, -1)}
-                        className="p-0.5 sm:p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-                        disabled={item.quantity === 0}
+                        className="w-7 h-7 rounded-md hover:bg-gray-100 flex items-center justify-center transition-colors"
                         type="button"
                       >
-                        <Minus className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" />
+                        <Minus className="h-3 w-3 text-gray-600" />
                       </button>
-                      <span className="w-6 sm:w-8 text-center font-medium text-sm sm:text-base">
+                      <span className="w-6 text-center font-semibold text-sm">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => handleUpdateQty(item.product_id, 1)}
-                        className="p-0.5 sm:p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                        className="w-7 h-7 rounded-md hover:bg-gray-100 flex items-center justify-center transition-colors"
                         disabled={
                           item.quantity >=
-                          (items.find((i) => i.product_id === item.product_id)
-                            ?.stock || 0)
+                          (items.find((i) => i.product_id === item.product_id)?.stock || 0)
                         }
                         type="button"
                       >
-                        <Plus className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" />
+                        <Plus className="h-3 w-3 text-gray-600" />
                       </button>
                     </div>
-                    <p className="w-16 sm:w-24 text-right font-semibold text-xs sm:text-base text-[var(--black-custom)]">
-                      Rp. {(item.price * item.quantity).toLocaleString("id-ID")}
-                    </p>
                   </div>
                 </div>
               ))
             )}
           </div>
-          <hr className="my-3 sm:my-4 border-gray-200" />
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex justify-between font-semibold text-base sm:text-lg">
-              <span className="text-[var(--black-custom)]">Total:</span>
-              <span className="text-[var(--primary-custom)]">
-                Rp. {totalPrice.toLocaleString("id-ID")}
+
+          {/* Divider */}
+          <div className="border-t border-gray-100 my-5" />
+
+          {/* Summary */}
+          <div className="space-y-4">
+            {/* Subtotal */}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-500">Subtotal</span>
+              <span className="font-medium text-[var(--black-custom)]">Rp {totalPrice.toLocaleString("id-ID")}</span>
+            </div>
+
+            {/* Total */}
+            <div className="flex justify-between items-center py-3 border-t border-dashed border-gray-200">
+              <span className="font-semibold text-[var(--black-custom)]">Total</span>
+              <span className="text-2xl font-bold bg-gradient-to-r from-[var(--primary-custom)] to-[var(--blue-custom)] bg-clip-text text-transparent">
+                Rp {totalPrice.toLocaleString("id-ID")}
               </span>
             </div>
+
+            {/* Payment Methods */}
             <div>
-              <h3 className="font-semibold mb-2 text-sm sm:text-base text-[var(--black-custom)]">
-                Payment Method:
+              <h3 className="font-semibold mb-3 text-sm text-[var(--black-custom)]">
+                Metode Pembayaran
               </h3>
-              <div className="flex gap-2">
-                {paymentMethods.map((pm) => (
-                  <button
-                    key={pm.key}
-                    type="button"
-                    onClick={() => setPaymentMethod(pm.key)}
-                    className={`flex-1 p-2 border rounded-md flex flex-col items-center transition-all ${paymentMethod === pm.key
-                      ? "border-[var(--primary-custom)] bg-[var(--primary-custom)]/10"
-                      : "border-gray-200"
-                      }`}
-                  >
-                    {pm.icon ? (
-                      <Image
-                        src={pm.icon}
-                        alt={pm.label}
-                        width={24}
-                        height={24}
-                        className="w-5 h-5 sm:w-6 sm:h-6"
-                      />
-                    ) : (
-                      <CreditCard className="h-5 w-5 sm:h-6 sm:w-6" />
-                    )}
-                    <span
-                      className={`text-xs mt-1 ${paymentMethod === pm.key
-                        ? "text-[var(--primary-custom)] font-semibold"
-                        : "text-gray-500"
+              <div className="grid grid-cols-3 gap-2">
+                {paymentMethods.map((pm) => {
+                  const IconComponent = pm.icon;
+                  return (
+                    <button
+                      key={pm.key}
+                      type="button"
+                      onClick={() => setPaymentMethod(pm.key)}
+                      className={`p-3 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${paymentMethod === pm.key
+                          ? "border-[var(--primary-custom)] bg-[var(--primary-custom)]/5"
+                          : "border-gray-100 hover:border-gray-200"
                         }`}
                     >
-                      {pm.label}
-                    </span>
-                  </button>
-                ))}
+                      <IconComponent className={`h-6 w-6 ${paymentMethod === pm.key ? 'text-[var(--primary-custom)]' : pm.color}`} />
+                      <span className={`text-xs font-medium ${paymentMethod === pm.key
+                          ? "text-[var(--primary-custom)]"
+                          : "text-gray-500"
+                        }`}>
+                        {pm.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
+
+            {/* Checkout Button */}
             <button
-              className="w-full py-2.5 sm:py-3 bg-[var(--primary-custom)] text-white rounded-lg font-semibold hover:opacity-90 transition-colors flex items-center justify-center disabled:opacity-50 text-sm sm:text-base"
+              className="w-full py-4 bg-gradient-to-r from-[var(--primary-custom)] to-[var(--blue-custom)] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[var(--primary-custom)]/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleOrderProcess}
               disabled={isLoading || cart.length === 0}
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                "Order Process"
+                <>
+                  <Sparkles className="h-5 w-5" />
+                  <span>Proses Pesanan</span>
+                </>
               )}
             </button>
           </div>
