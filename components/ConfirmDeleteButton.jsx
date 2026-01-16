@@ -17,7 +17,7 @@ export default function ConfirmDeleteButton({ formId, productName }) {
                     <div className="flex-1">
                         <h4 className="font-semibold text-[var(--black-custom)]">Hapus Produk?</h4>
                         <p className="text-sm text-gray-500 mt-1">
-                            Produk "{productName}" akan dihapus secara permanen.
+                            Produk &quot;{productName}&quot; akan dihapus secara permanen.
                         </p>
                     </div>
                 </div>
