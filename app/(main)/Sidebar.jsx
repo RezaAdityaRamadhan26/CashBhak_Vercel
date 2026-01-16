@@ -89,7 +89,7 @@ const Sidebar = () => {
       >
         <div>
           {/* Header */}
-          <div className="flex items-center justify-between mb-8 px-1">
+          <div className={`flex items-center mb-8 ${isDesktopExpanded ? 'justify-between px-1' : 'flex-col gap-3'}`}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
                 <Image src="/images/logo.png" alt="Logo" width={36} height={36} className="flex-shrink-0" />
@@ -138,7 +138,7 @@ const Sidebar = () => {
 
         {/* Logout */}
         <div className="border-t border-gray-100 pt-4">
-          <Logout />
+          <Logout isExpanded={isDesktopExpanded} />
         </div>
       </aside>
 
