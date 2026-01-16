@@ -132,7 +132,7 @@ export default function TransactionPage() {
               <p className="text-gray-500">Tidak ada produk tersedia</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {items.map((item) => {
                 const qty = getCartQty(item.product_id);
                 const isOutOfStock = item.stock === 0;
@@ -141,8 +141,8 @@ export default function TransactionPage() {
                 return (
                   <div
                     className={`relative bg-white rounded-2xl border overflow-hidden transition-all duration-300 group ${isInCart
-                        ? 'border-[var(--primary-custom)] shadow-lg shadow-[var(--primary-custom)]/20'
-                        : 'border-gray-100 hover:border-gray-200 hover:shadow-md'
+                      ? 'border-[var(--primary-custom)] shadow-lg shadow-[var(--primary-custom)]/20'
+                      : 'border-gray-100 hover:border-gray-200 hover:shadow-md'
                       } ${isOutOfStock ? 'opacity-60' : ''}`}
                     key={item.product_id}
                   >
@@ -166,44 +166,44 @@ export default function TransactionPage() {
                         src={item.product_image}
                         alt={item.product_name || "Product Image"}
                         fill
-                        className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+                        className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
 
                     {/* Content */}
-                    <div className="p-4">
-                      <h3 className="font-semibold text-[var(--black-custom)] truncate text-sm">
+                    <div className="p-3">
+                      <h3 className="font-semibold text-[var(--black-custom)] truncate text-xs">
                         {item.product_name}
                       </h3>
-                      <p className="text-xs text-gray-400 mt-1">Stok: {item.stock}</p>
-                      <p className="text-lg font-bold text-[var(--primary-custom)] mt-1">
+                      <p className="text-xs text-gray-400">Stok: {item.stock}</p>
+                      <p className="text-sm font-bold text-[var(--primary-custom)] mt-0.5">
                         Rp {item.price?.toLocaleString("id-ID")}
                       </p>
 
                       {/* Quantity Controls */}
-                      <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center justify-between mt-2">
                         <button
-                          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${qty === 0
-                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-red-100 text-red-600 hover:bg-red-200'
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${qty === 0
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-red-100 text-red-600 hover:bg-red-200'
                             }`}
                           onClick={() => handleRemoveFromCart(item)}
                           disabled={qty === 0}
                           type="button"
                         >
-                          <Minus className="h-4 w-4" />
+                          <Minus className="h-3 w-3" />
                         </button>
-                        <span className="font-bold text-[var(--black-custom)]">{qty}</span>
+                        <span className="font-bold text-sm text-[var(--black-custom)]">{qty}</span>
                         <button
-                          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${qty >= item.stock
-                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-[var(--primary-custom)] text-white hover:bg-[var(--primary-custom)]/90 shadow-lg shadow-[var(--primary-custom)]/30'
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${qty >= item.stock
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-[var(--primary-custom)] text-white hover:bg-[var(--primary-custom)]/90'
                             }`}
                           onClick={() => handleAddToCart(item)}
                           disabled={qty >= item.stock}
                           type="button"
                         >
-                          <Plus className="h-4 w-4" />
+                          <Plus className="h-3 w-3" />
                         </button>
                       </div>
                     </div>
@@ -323,14 +323,14 @@ export default function TransactionPage() {
                       type="button"
                       onClick={() => setPaymentMethod(pm.key)}
                       className={`p-3 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${paymentMethod === pm.key
-                          ? "border-[var(--primary-custom)] bg-[var(--primary-custom)]/5"
-                          : "border-gray-100 hover:border-gray-200"
+                        ? "border-[var(--primary-custom)] bg-[var(--primary-custom)]/5"
+                        : "border-gray-100 hover:border-gray-200"
                         }`}
                     >
                       <IconComponent className={`h-6 w-6 ${paymentMethod === pm.key ? 'text-[var(--primary-custom)]' : pm.color}`} />
                       <span className={`text-xs font-medium ${paymentMethod === pm.key
-                          ? "text-[var(--primary-custom)]"
-                          : "text-gray-500"
+                        ? "text-[var(--primary-custom)]"
+                        : "text-gray-500"
                         }`}>
                         {pm.label}
                       </span>

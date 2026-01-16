@@ -35,10 +35,10 @@ export default async function ItemsDataPage() {
           <DialogAdd />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
           {items.map((item) => (
             <div
-              className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group"
+              className="bg-white rounded-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group"
               key={item.product_id}
             >
               {/* Image Container */}
@@ -52,29 +52,29 @@ export default async function ItemsDataPage() {
                   priority={false}
                 />
                 {/* Stock Badge */}
-                <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${item.stock > 10
-                    ? 'bg-green-100 text-green-700'
-                    : item.stock > 0
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : 'bg-red-100 text-red-700'
+                <div className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-semibold ${item.stock > 10
+                  ? 'bg-green-100 text-green-700'
+                  : item.stock > 0
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-red-100 text-red-700'
                   }`}>
                   {item.stock > 0 ? `Stok: ${item.stock}` : 'Habis'}
                 </div>
               </div>
 
               {/* Content */}
-              <div className="p-5">
-                <h3 className="text-lg font-semibold text-[var(--black-custom)] truncate mb-1">
+              <div className="p-3">
+                <h3 className="text-sm font-semibold text-[var(--black-custom)] truncate mb-1">
                   {item.product_name}
                 </h3>
-                <p className="text-2xl font-bold bg-gradient-to-r from-[var(--primary-custom)] to-[var(--blue-custom)] bg-clip-text text-transparent mb-4">
+                <p className="text-lg font-bold bg-gradient-to-r from-[var(--primary-custom)] to-[var(--blue-custom)] bg-clip-text text-transparent mb-3">
                   Rp {item.price.toLocaleString("id-ID")}
                 </p>
 
                 {/* Low Stock Warning */}
                 {item.stock > 0 && item.stock <= 5 && (
-                  <div className="flex items-center gap-2 text-yellow-600 text-xs mb-4 p-2 bg-yellow-50 rounded-lg">
-                    <AlertCircle className="h-4 w-4" />
+                  <div className="flex items-center gap-1 text-yellow-600 text-xs mb-3 p-1.5 bg-yellow-50 rounded-md">
+                    <AlertCircle className="h-3 w-3" />
                     <span>Stok hampir habis</span>
                   </div>
                 )}

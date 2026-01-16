@@ -91,8 +91,8 @@ const Sidebar = () => {
           {/* Header */}
           <div className="flex items-center justify-between mb-8 px-1">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[var(--primary-custom)] to-[var(--blue-custom)] rounded-xl flex items-center justify-center shadow-lg shadow-[var(--primary-custom)]/30">
-                <Image src="/images/logo.png" alt="Logo" width={24} height={24} className="flex-shrink-0" />
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <Image src="/images/logo.png" alt="Logo" width={36} height={36} className="flex-shrink-0" />
               </div>
               {isDesktopExpanded && (
                 <span className="text-xl font-bold text-[var(--black-custom)]" style={{ fontFamily: 'var(--font-poppins)' }}>
@@ -145,8 +145,8 @@ const Sidebar = () => {
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 p-4 flex items-center justify-between h-16">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-[var(--primary-custom)] to-[var(--blue-custom)] rounded-lg flex items-center justify-center">
-            <Image src="/images/logo.png" alt="Logo" width={20} height={20} />
+          <div className="w-8 h-8 flex items-center justify-center">
+            <Image src="/images/logo.png" alt="Logo" width={32} height={32} />
           </div>
           <span className="font-bold text-[var(--black-custom)]" style={{ fontFamily: 'var(--font-poppins)' }}>
             CashBhak

@@ -27,12 +27,12 @@ export default function Logout() {
 
   return (
     <button
-      className="flex items-center gap-2 p-2 rounded-md w-full text-[var(--light-custom)] bg-[var(--red-custom)] hover:bg-[var(--red-custom)] hover:opacity-50 transition-opacity"
+      className="flex items-center gap-2 p-2 rounded-xl w-full text-[var(--light-custom)] bg-[var(--red-custom)] hover:bg-[var(--red-custom)]/80 transition-colors overflow-hidden"
       style={{ fontFamily: "var(--font-poppins)" }}
       onClick={FullOut}
     >
       <Image src="/images/logout.png" alt="Log Out" width={20} height={20} className="flex-shrink-0" />
-      <span className="font-medium">Log Out</span>
+      <span className="font-medium whitespace-nowrap">Log Out</span>
     </button>
   )
 }

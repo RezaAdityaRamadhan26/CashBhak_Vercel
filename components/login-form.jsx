@@ -114,13 +114,10 @@ export function LoginForm({ className, ...props }) {
       </Button>
 
       {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-gray-500">atau</span>
-        </div>
+      <div className="flex items-center gap-4 my-2">
+        <div className="flex-1 h-px bg-gray-200"></div>
+        <span className="text-sm text-gray-500">atau</span>
+        <div className="flex-1 h-px bg-gray-200"></div>
       </div>
 
       {/* Sign Up Link */}

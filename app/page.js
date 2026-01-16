@@ -369,7 +369,7 @@ export default function LandingPage() {
             </Link>
             <Button
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white/10 font-semibold px-8 py-6 rounded-xl text-base transition-all duration-300"
+              className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-[var(--primary-custom)] font-semibold px-8 py-6 rounded-xl text-base transition-all duration-300"
             >
               Hubungi Sales
             </Button>
