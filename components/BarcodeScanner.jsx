@@ -2,43 +2,45 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import { Camera, X, ScanLine, Loader2 } from "lucide-react";
+import { Camera, X, Loader2 } from "lucide-react";
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
 
 export default function BarcodeScanner({ onScanSuccess, onClose, isOpen }) {
     const [isScanning, setIsScanning] = useState(false);
     const [error, setError] = useState(null);
+    const [isInitialized, setIsInitialized] = useState(false);
     const scannerRef = useRef(null);
     const html5QrCodeRef = useRef(null);
+    const isMountedRef = useRef(true);
 
-    useEffect(() => {
-        if (isOpen && !isScanning) {
-            startScanner();
+    const stopScanner = async () => {
+        try {
+            if (html5QrCodeRef.current) {
+                if (html5QrCodeRef.current.isScanning) {
+                    await html5QrCodeRef.current.stop();
+                }
+                html5QrCodeRef.current.clear();
+                html5QrCodeRef.current = null;
+            }
+        } catch (err) {
+            console.error("Error stopping scanner:", err);
         }
-
-        return () => {
-            stopScanner();
-        };
-    }, [isOpen]);
+        if (isMountedRef.current) {
+            setIsScanning(false);
+            setIsInitialized(false);
+        }
+    };
 
     const startScanner = async () => {
+        if (!scannerRef.current || html5QrCodeRef.current) return;
+
         try {
             setError(null);
             setIsScanning(true);
-
-            // Wait for DOM to be ready
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            if (!scannerRef.current) {
-                setError("Scanner element not found");
-                setIsScanning(false);
-                return;
-            }
 
             html5QrCodeRef.current = new Html5Qrcode("barcode-scanner");
 
@@ -52,42 +54,59 @@ export default function BarcodeScanner({ onScanSuccess, onClose, isOpen }) {
                 { facingMode: "environment" },
                 config,
                 (decodedText) => {
-                    // Successfully scanned
                     onScanSuccess(decodedText);
                     stopScanner();
                     onClose();
                 },
-                (errorMessage) => {
+                () => {
                     // Ignore scan errors (no QR code found in frame)
                 }
             );
         } catch (err) {
             console.error("Error starting scanner:", err);
-            setError(err.message || "Gagal mengakses kamera. Pastikan izin kamera diberikan.");
-            setIsScanning(false);
-        }
-    };
-
-    const stopScanner = async () => {
-        try {
-            if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
-                await html5QrCodeRef.current.stop();
-                html5QrCodeRef.current.clear();
+            if (isMountedRef.current) {
+                setError(err.message || "Gagal mengakses kamera. Pastikan izin kamera diberikan.");
+                setIsScanning(false);
             }
-        } catch (err) {
-            console.error("Error stopping scanner:", err);
         }
-        setIsScanning(false);
     };
 
-    const handleClose = () => {
-        stopScanner();
-        onClose();
+    // Cleanup on unmount
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+            stopScanner();
+        };
+    }, []);
+
+    // Handle dialog open state changes
+    const handleOpenChange = (open) => {
+        if (!open) {
+            stopScanner();
+            onClose();
+        }
+    };
+
+    // Initialize scanner when dialog content is ready
+    const handleDialogContentMount = () => {
+        if (!isInitialized && isOpen) {
+            setIsInitialized(true);
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                if (isMountedRef.current && isOpen) {
+                    startScanner();
+                }
+            }, 100);
+        }
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[500px] p-0 gap-0 rounded-2xl overflow-hidden border-0">
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+            <DialogContent
+                className="sm:max-w-[500px] p-0 gap-0 rounded-2xl overflow-hidden border-0"
+                onAnimationEnd={handleDialogContentMount}
+            >
                 {/* Header */}
                 <div className="bg-gradient-to-r from-[var(--primary-custom)] to-[var(--blue-custom)] p-4 text-white">
                     <div className="flex items-center justify-between">
@@ -173,7 +192,7 @@ export default function BarcodeScanner({ onScanSuccess, onClose, isOpen }) {
                 {/* Footer */}
                 <div className="px-4 pb-4">
                     <button
-                        onClick={handleClose}
+                        onClick={() => handleOpenChange(false)}
                         className="w-full py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
                     >
                         Batal
