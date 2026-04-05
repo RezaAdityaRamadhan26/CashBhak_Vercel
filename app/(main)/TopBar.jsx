@@ -75,11 +75,19 @@ export default function Topbar() {
           onClick={() => router.push('/profile')}
           className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-xl transition-colors"
         >
-          <img
-            src={userData?.profile_image || "/images/profile.png"}
-            alt="User Avatar"
-            className="rounded-full w-10 h-10 object-cover ring-2 ring-gray-100"
-          />
+          {userData?.profile_image ? (
+            <img
+              src={userData.profile_image}
+              alt="User Avatar"
+              className="rounded-full w-10 h-10 object-cover ring-2 ring-gray-100"
+            />
+          ) : (
+            <svg viewBox="0 0 212 212" xmlns="http://www.w3.org/2000/svg" className="rounded-full w-10 h-10 ring-2 ring-gray-100">
+              <rect width="212" height="212" fill="#DFE5E7"/>
+              <circle cx="106" cy="82" r="38" fill="#B0BEC5"/>
+              <ellipse cx="106" cy="182" rx="62" ry="46" fill="#B0BEC5"/>
+            </svg>
+          )}
           <div className="text-left">
             <p className="font-semibold text-sm text-[var(--black-custom)]">{userData?.username}</p>
             <p className="text-xs text-gray-500">Administrator</p>

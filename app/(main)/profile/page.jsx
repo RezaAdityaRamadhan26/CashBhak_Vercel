@@ -137,7 +137,7 @@ export default async function ProfilePage() {
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 <div className="flex-1 w-full">
                   <label className="block text-sm font-medium text-gray-600 mb-2">Password</label>
-                  <PasswordDisplay />
+                  <PasswordDisplay password={userData.password} />
                 </div>
                 <div className="sm:mt-8">
                   <PwEdit />

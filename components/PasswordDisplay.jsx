@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
 
-export function PasswordDisplay() {
+export function PasswordDisplay({ password }) {
   const [show, setShow] = useState(false);
 
   return (
@@ -11,7 +11,7 @@ export function PasswordDisplay() {
       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
       <input
         type={show ? "text" : "password"}
-        value="**********"
+        value={password || ""}
         readOnly
         className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[var(--black-custom)] focus:outline-none"
       />
