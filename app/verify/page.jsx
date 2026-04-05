@@ -24,7 +24,6 @@ export default async function VerifyPage(props) {
         status = "error";
         message = "Token sudah digunakan atau tidak ditemukan.";
       } else {
-        // Update status verifikasi dan hapus token
         await connection.execute(
           "UPDATE users SET is_verified = 1, verification_token = NULL WHERE verification_token = ?",
           [token]

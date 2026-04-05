@@ -7,6 +7,7 @@ import { PwEdit } from '@/components/PwEdit';
 import { EmailEdit } from '@/components/EmailEdit';
 import { fetchUserData } from '@/lib/action';
 import { AvatarEdit } from '@/components/AvatarEdit';
+import { PasswordDisplay } from '@/components/PasswordDisplay';
 import { User, Mail, Lock, Calendar, CreditCard, CheckCircle2, Clock, Crown } from 'lucide-react';
 
 const subscriptionHistory = [
@@ -52,12 +53,21 @@ export default async function ProfilePage() {
           <div className="flex flex-col md:flex-row gap-6 md:items-end -mt-16">
             {/* Avatar Section */}
             <div className="relative">
-              <div className="w-32 h-32 rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-white">
-                <img
-                  src={userData.profile_image || "/images/profile.png"}
-                  alt="User Avatar"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-32 h-32 rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                {userData.profile_image ? (
+                  <img
+                    src={userData.profile_image}
+                    alt="User Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  /* Default avatar mirip WhatsApp — silhouette abu-abu */
+                  <svg viewBox="0 0 212 212" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                    <rect width="212" height="212" fill="#DFE5E7"/>
+                    <circle cx="106" cy="82" r="38" fill="#B0BEC5"/>
+                    <ellipse cx="106" cy="182" rx="62" ry="46" fill="#B0BEC5"/>
+                  </svg>
+                )}
               </div>
               <div className="absolute -bottom-2 -right-2">
                 <AvatarEdit />
@@ -127,15 +137,7 @@ export default async function ProfilePage() {
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 <div className="flex-1 w-full">
                   <label className="block text-sm font-medium text-gray-600 mb-2">Password</label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input
-                      type="password"
-                      value="**********"
-                      readOnly
-                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[var(--black-custom)] focus:outline-none"
-                    />
-                  </div>
+                  <PasswordDisplay />
                 </div>
                 <div className="sm:mt-8">
                   <PwEdit />
