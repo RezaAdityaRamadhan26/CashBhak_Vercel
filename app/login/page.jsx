@@ -3,7 +3,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Zap } from "lucide-react"
 
-export default function LoginPage() {
+export default async function LoginPage(props) {
+  const searchParams = await props.searchParams;
+  const isVerify = searchParams?.verify === "1";
+
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Form */}
@@ -33,6 +36,13 @@ export default function LoginPage() {
                 Masuk ke akun Anda untuk melanjutkan
               </p>
             </div>
+
+            {isVerify && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex flex-col gap-1 text-sm">
+                <span className="font-semibold text-base">Registrasi Berhasil! 🎉</span>
+                <span>Kami telah mengirimkan tautan verifikasi. Silakan periksa kotak masuk atau folder spam email Anda untuk mengaktifkan akun.</span>
+              </div>
+            )}
 
             <LoginForm />
           </div>

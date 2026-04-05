@@ -170,5 +170,10 @@ INSERT INTO transaction_items (transaction_id, product_id, quantity, price_per_i
 -- MIGRATION: Add barcode column to existing products table
 -- Jalankan query ini jika database sudah ada sebelumnya
 -- ============================================================
--- ALTER TABLE products ADD COLUMN barcode VARCHAR(100) DEFAULT NULL AFTER product_name;
 -- ALTER TABLE products ADD INDEX idx_barcode (barcode);
+
+-- ============================================================
+-- MIGRATION: Add email verification columns to users table
+-- ============================================================
+-- ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT FALSE;
+-- ALTER TABLE users ADD COLUMN verification_token VARCHAR(255) DEFAULT NULL;

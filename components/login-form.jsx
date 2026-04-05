@@ -26,7 +26,11 @@ export function LoginForm({ className, ...props }) {
 
     if (!response.ok) {
       setIsLoading(false);
-      toast.error('Gagal login. Periksa email atau password.');
+      if (response.error === "UNVERIFIED") {
+        toast.error('Akun Anda belum terverifikasi. Silakan periksa kotak masuk email Anda untuk link verifikasi.');
+      } else {
+        toast.error('Gagal login. Periksa email atau password.');
+      }
       return null
     }
 

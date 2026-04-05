@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { register } from "@/lib/action";
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { User, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react"
 
 export function SignupForm({ className, ...props }) {
@@ -12,10 +13,22 @@ export function SignupForm({ className, ...props }) {
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const router = useRouter();
+
   async function handleSubmit(formData) {
     setIsLoading(true);
-    await register(formData);
-    setIsLoading(false);
+    try {
+      const result = await register(formData);
+      if (result && result.error) {
+        alert(result.error);
+      } else if (result && result.success) {
+        router.push("/login?verify=1");
+      }
+    } catch (e) {
+      alert(e.message || "Terjadi kesalahan sistem, silakan coba lagi.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

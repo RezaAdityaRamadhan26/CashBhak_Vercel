@@ -18,7 +18,14 @@ export const authOptions = {
         if (!user) return null;
 
         // bandingkan password biasa
-        if (user.password !== password) return null;
+        if (user.password !== password) {
+          throw new Error("Email atau password salah.");
+        }
+
+        // pastikan akun sudah diverifikasi
+        if (!user.is_verified) {
+          throw new Error("UNVERIFIED");
+        }
 
         // return data user ke session
         return {
